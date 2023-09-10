@@ -1,0 +1,29 @@
+﻿{
+	"FileVersion": 3,
+	"Version": 1,
+	"VersionName": "1.0",
+	"FriendlyName": "GameSettingsCore",
+	"Description": "様々なゲームでユーザーが変更可能なゲーム設定を簡単に管理できるようにするためのプラグイン",
+	"Category": "GameSettings",
+	"CreatedBy": "owoDra",
+	"CreatedByURL": "",
+	"DocsURL": "",
+	"MarketplaceURL": "",
+	"SupportURL": "",
+	"CanContainContent": true,
+	"IsBetaVersion": false,
+	"IsExperimentalVersion": false,
+	"Installed": false,
+	"Modules": [
+		{
+			"Name": "GSCore",
+			"Type": "Runtime",
+			"LoadingPhase": "Default"
+		},
+		{
+			"Name": "GSEditorCore",
+			"Type": "Runtime",
+			"LoadingPhase": "Default"
+		}
+	]
+}
