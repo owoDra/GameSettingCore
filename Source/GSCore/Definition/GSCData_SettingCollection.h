@@ -25,6 +25,6 @@ public:
 	// 定義データのリスト
 	//
 	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = "Collection")
-	TObjectPtr<const UGSCData_SettingBase> Collection;
+	TArray<TObjectPtr<UGSCData_SettingBase>> Collection;
 
 };

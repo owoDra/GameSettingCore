@@ -4,17 +4,16 @@
 
 #include "UObject/Object.h"
 
-#include "GSCPicker_DataSource.generated.h"
+#include "GSCPicker_PropertySource.generated.h"
 
 
 /**
- * 設定項目の定義時に使用する設定のパラメータソースへアクセスするためのデータ
+ * 設定項目の定義時に使用する設定のプロパティへアクセスするためのデータソース
  * 
  * Tips:
  *  この構造体の変数定義では UPROPERTY マクロの Meta指定子 を用いて候補で表示される
  *  Getter/Setter 関数の種類を決めることができます。使用できる Meta指定子 は以下の通りです。
  *  
- *  - ContextFuncTemplate (この指定しを使用する場合、表示されるのは static 関数のみになる)
  *  - GetterFuncTemplate
  *  - SetterFuncTemplate
  *  
@@ -24,7 +23,7 @@
  *  UPROPERTY(meta = (GetterFuncTemplate = "/Script/ModuleName.ClassName::DelegateName__DelegateSignature"))
  */
 USTRUCT(BlueprintType)
-struct GSCORE_API FGSCPicker_DataSource
+struct GSCORE_API FGSCPicker_PropertySource
 {
 public:
 	GENERATED_BODY()
@@ -32,35 +31,32 @@ public:
 	//
 	// この構造体型の初期状態のデータ
 	//
-	static const FGSCPicker_DataSource Empty;
+	static const FGSCPicker_PropertySource Empty;
 
 public:
 	//
-	// パラメータにアクセス可能なクラス
+	// 関数にアクセス可能なデータソースの名前
+	// 
+	// Tips:
+	//  このデータソース名は GameSettingsCore のデベロッパー設定で登録したものになります。
 	//
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
-	TObjectPtr<UClass> SourceClass{ nullptr };
+	FName SettingSourceName{ NAME_None };
 
 	//
-	// SourceClass のオブジェクトからアクセスする関数の名前
+	// プロパティにアクセスする関数の名前
 	//
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
 	FName FunctionName{ NAME_None };
 
 public:
-	FGSCPicker_DataSource() = default;
+	FGSCPicker_PropertySource() = default;
 
-	FGSCPicker_DataSource(UClass* InSourceClass, FName InFunctionName)
-		: SourceClass(InSourceClass)
+	FGSCPicker_PropertySource(FName InSettingSourceName, FName InFunctionName)
+		: SettingSourceName(InSettingSourceName)
 		, FunctionName(InFunctionName)
 	{
 	}
-
-public:
-	/**
-	 * 現在のデータが有効かどうかを返す
-	 */
-	bool IsValid() const { return (SourceClass && FunctionName.IsValid() && !FunctionName.IsNone()); }
 
 };
 

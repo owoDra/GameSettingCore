@@ -5,6 +5,9 @@
 #include "Definition/Picker/GSCPicker_DataSource.h"
 #include "PropertyCustomization/GSCDataSourcePickerCustomization.h"
 
+#include "PropertyCustomization/GSCSettingSourcePickerCustomization.h"
+#include "PropertyCustomization/GSCPropertySourcePickerCustomization.h"
+
 IMPLEMENT_MODULE(FGSEditorCoreModule, GSEditorCore)
 
 
@@ -32,6 +35,9 @@ void FGSEditorCoreModule::RegisterPropertyCustomizations()
 		FGSCPicker_DataSource::StaticStruct()->GetFName(),
 		FOnGetPropertyTypeCustomizationInstance::CreateStatic(&FGSCDataSourcePickerCustomization::MakeInstance));
 
+	FGSCSettingSourcePickerCustomization::RegisterToPropertyEditorModule(PropertyModule);
+	FGSCPropertySourcePickerCustomization::RegisterToPropertyEditorModule(PropertyModule);
+
 	PropertyModule.NotifyCustomizationModuleChanged();
 }
 
@@ -45,4 +51,7 @@ void FGSEditorCoreModule::UnregisterPropertyCustomizations()
 	auto& PropertyModule{ FModuleManager::LoadModuleChecked<FPropertyEditorModule>(NAME_PropertyEditorModule) };
 
 	PropertyModule.UnregisterCustomPropertyTypeLayout(FGSCPicker_DataSource::StaticStruct()->GetFName());
+
+	FGSCSettingSourcePickerCustomization::UnregisterToPropertyEditorModule(PropertyModule);
+	FGSCPropertySourcePickerCustomization::UnregisterToPropertyEditorModule(PropertyModule);
 }

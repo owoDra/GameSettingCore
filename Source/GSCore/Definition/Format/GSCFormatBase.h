@@ -4,11 +4,53 @@
 
 #include "UObject/Object.h"
 
-#include "Definition/Picker/GSCPicker_DataSource.h"
+#include "Definition/Picker/GSCPicker_PropertySource.h"
 
 #include "GSCFormatBase.generated.h"
 
-struct FCachedPropertyPath;
+//struct FCachedPropertyPath;
+class UGSCEditCondition;
+
+
+/**
+ * EditCondition の判定の仕方を定義する列挙型
+ */
+UENUM(BlueprintType)
+enum class EGSCEditConditionType : uint8
+{
+	// 無条件で常に編集可能な設定
+
+	AlwaysAllowed	UMETA(DisplayName = "Always Allowed"),
+
+	// 指定したデータソースの値に基づいて編集可能か決める設定
+
+	ByDataSource	UMETA(DisplayName = "Determined By Data Source"),
+
+	// 指定したフラグメントの値に基づいて編集可能か決める設定
+
+	ByFragment		UMETA(DisplayName = "Determined By Fragment"),
+};
+
+
+/**
+ * デフォルト値の扱いに関する定義する列挙型
+ */
+UENUM(BlueprintType)
+enum class EGSCDefaultValueType : uint8
+{
+	// プロパティが定義された CDO の値をデフォルト値とする
+
+	Default		UMETA(DisplayName = "Default"),
+
+	// この定義データで設定した値をデフォルト値とする
+
+	Literal		UMETA(DisplayName = "Literal"),
+
+	// 指定したデータソースの値をデフォルト値とする
+
+	DataSource	UMETA(DisplayName = "From Data Source"),
+
+};
 
 
 /**
@@ -45,25 +87,43 @@ class GSCORE_API UGSCFormatBase : public UObject
 {
 public:
 	GENERATED_BODY()
-public:
-	UGSCFormatBase() {}
 
 protected:
 	//
-	// 設定へアクセス可能なオブジェクトを取得する関数の名前
+	// EditCondition の判定の仕方
+	// 
+	// AlwaysAllowed	: 無条件で常に編集可能な設定
+	// ByDataSource		: 指定したデータソースの値に基づいて編集可能か決める設定
+	// ByFragment		: 指定したフラグメントの値に基づいて編集可能か決める設定
 	//
-	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = "DataSources",
-		meta = (ContextFuncTemplate = "/Script/GSCore.GSCPickerTemplate_FormatBase::StaticContextTemplate__DelegateSignature"))
-	FGSCPicker_DataSource StaticContextSource;
+	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = "EditCondition")
+	EGSCEditConditionType EditConditionType{ EGSCEditConditionType::AlwaysAllowed };
 
 	//
 	// 設定が変更可能かどうかを取得する関数の名前
-	// 
-	// Tips:
-	//  この項目を設定しない場合は常に変更可能になります
 	//
-	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = "DataSources",
-		meta = (GetterFuncTemplate = "/Script/GSCore.GSCPickerTemplate_FormatBase::EditConditionTemplate__DelegateSignature"))
-	FGSCPicker_DataSource EditConditionSource;
+	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = "EditCondition", meta = (
+		EditCondition = "EditConditionType == EGSCEditConditionType::ByDataSource", EditConditionHides,
+		GetterFuncTemplate = "/Script/GSCore.GSCPickerTemplate_FormatBase::EditConditionTemplate__DelegateSignature"))
+	FGSCPicker_PropertySource EditConditionSource{ FGSCPicker_PropertySource::Empty };
+
+	//
+	// 設定が変更可能かどうかを取得するフラグメント
+	//
+	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Instanced, Category = "EditCondition", meta = (
+		EditCondition = "EditConditionType == EGSCEditConditionType::ByFragment", EditConditionHides))
+	TObjectPtr<const UGSCEditCondition> EditConditionFragment{ nullptr };
+
+
+protected:
+	//
+	// デフォルト値の扱い方
+	// 
+	// Default		: プロパティが定義された CDO の値をデフォルト値とする
+	// Literal		: この定義データで設定した値をデフォルト値とする
+	// DataSource	: 指定したデータソースの値をデフォルト値とする
+	//
+	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = "DefaultValue")
+	EGSCDefaultValueType DefaultValueType { EGSCDefaultValueType::Literal };
 
 };
