@@ -8,7 +8,6 @@
 
 #include "GSCFormatBase.generated.h"
 
-//struct FCachedPropertyPath;
 class UGSCEditCondition;
 
 
@@ -29,27 +28,6 @@ enum class EGSCEditConditionType : uint8
 	// 指定したフラグメントの値に基づいて編集可能か決める設定
 
 	ByFragment		UMETA(DisplayName = "Determined By Fragment"),
-};
-
-
-/**
- * デフォルト値の扱いに関する定義する列挙型
- */
-UENUM(BlueprintType)
-enum class EGSCDefaultValueType : uint8
-{
-	// プロパティが定義された CDO の値をデフォルト値とする
-
-	Default		UMETA(DisplayName = "Default"),
-
-	// この定義データで設定した値をデフォルト値とする
-
-	Literal		UMETA(DisplayName = "Literal"),
-
-	// 指定したデータソースの値をデフォルト値とする
-
-	DataSource	UMETA(DisplayName = "From Data Source"),
-
 };
 
 
@@ -115,15 +93,15 @@ protected:
 	TObjectPtr<const UGSCEditCondition> EditConditionFragment{ nullptr };
 
 
-protected:
-	//
-	// デフォルト値の扱い方
-	// 
-	// Default		: プロパティが定義された CDO の値をデフォルト値とする
-	// Literal		: この定義データで設定した値をデフォルト値とする
-	// DataSource	: 指定したデータソースの値をデフォルト値とする
-	//
-	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = "DefaultValue")
-	EGSCDefaultValueType DefaultValueType { EGSCDefaultValueType::Literal };
+public:
+	/**
+	 * 設定の GetterSource を取得する
+	 */
+	virtual FGSCPicker_PropertySource GetGetterSource() const { return FGSCPicker_PropertySource::Empty; }
+
+	/**
+	 * 設定の SetterSource を取得する
+	 */
+	virtual FGSCPicker_PropertySource GetSetterSource() const { return FGSCPicker_PropertySource::Empty; }
 
 };

@@ -9,6 +9,7 @@
 #include "GSCData_SettingDefinition.generated.h"
 
 class UGSCFormatBase;
+struct FGSCPicker_PropertySource;
 
 
 /**
@@ -61,4 +62,16 @@ public:
 	//
 	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Instanced, Category = "Setting")
 	TObjectPtr<const UGSCFormatBase> Format;
+
+
+public:
+	/**
+	 * 設定の GetterSource を取得する
+	 */
+	virtual FGSCPicker_PropertySource GetGetterSource() const;
+
+	/**
+	 * 設定の SetterSource を取得する
+	 */
+	virtual FGSCPicker_PropertySource GetSetterSource() const;
 };

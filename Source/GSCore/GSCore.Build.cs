@@ -37,6 +37,9 @@ public class GSCore : ModuleRules
 				"ApplicationCore",
 				"PropertyPath",
                 "DeveloperSettings",
+                "BlueprintGraph",
+				"GraphEditor",
+				"KismetCompiler",
             }
 		);
 	}

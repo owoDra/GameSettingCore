@@ -43,28 +43,9 @@ public:
 
 protected:
 	//
-	// 設定のデフォルト値を取得する関数の名前
-	//
-	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = "DefaultValue", meta = (
-		DisplayAfter = "DefaultValueType",
-		EditCondition = "DefaultValueType == EGSCDefaultValueType::DataSource", EditConditionHides,
-		GetterFuncTemplate = "/Script/GSCore.GSCPickerTemplate_FormatFloat::GetterTemplate__DelegateSignature"))
-	FGSCPicker_PropertySource DefaultValueSource{ FGSCPicker_PropertySource::Empty };
-
-	//
-	// 設定のデフォルト値
-	//
-	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = "DefaultValue", meta = (
-		DisplayAfter = "DefaultValueType",
-		EditCondition = "DefaultValueType == EGSCDefaultValueType::Literal", EditConditionHides))
-	float DefaultValue{ 0.0f };
-
-
-protected:
-	//
 	// 設定の値の Getter 関数名
 	//
-	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = "Parameter", meta = (
+	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = "DataSource", meta = (
 		DisplayAfter = "StaticContextSource",
 		GetterFuncTemplate = "/Script/GSCore.GSCPickerTemplate_FormatFloat::GetterTemplate__DelegateSignature"))
 	FGSCPicker_PropertySource GetterSource{ FGSCPicker_PropertySource::Empty };
@@ -72,33 +53,38 @@ protected:
 	//
 	// 設定の値の Setter 関数名
 	//
-	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = "Parameter", meta = (
+	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = "DataSource", meta = (
 		DisplayAfter = "StaticContextSource",
 		SetterFuncTemplate = "/Script/GSCore.GSCPickerTemplate_FormatFloat::SetterTemplate__DelegateSignature"))
 	FGSCPicker_PropertySource SetterSource{ FGSCPicker_PropertySource::Empty };
 
+protected:
 	//
 	// 設定値の編集可能な最大値
 	//
-	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = "Parameter")
+	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = "UI Parameter")
 	float MaxValue{ 1.0f };
 
 	//
 	// 設定値の編集可能な最小値
 	//
-	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = "Parameter")
+	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = "UI Parameter")
 	float MinValue{ 0.0f };
 
 	//
 	// 設定値の編集時のスライダーのステップ
 	//
-	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = "Parameter")
+	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = "UI Parameter")
 	float Step{ 0.1f };
 
 	//
 	// 設定値の表示可能な小数点以下の桁数
 	//
-	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = "Parameter")
+	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = "UI Parameter")
 	int32 FractionDigits { 2 };
+
+public:
+	virtual FGSCPicker_PropertySource GetGetterSource() const override;
+	virtual FGSCPicker_PropertySource GetSetterSource() const override;
 
 };

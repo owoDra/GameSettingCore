@@ -42,11 +42,4 @@ public:
 	UPROPERTY(Config, EditAnywhere, Category = "DataSources", meta = (ForceInlineRow, ConfigRestartRequired = true))
 	TMap<FName, FGSCPicker_SettingSource> SettingSources;
 
-
-	//
-	// ゲーム設定のカテゴリーごとの設定項目の定義データ
-	//
-	UPROPERTY(Config, EditAnywhere, Category = "GameSettings", meta = (AllowedClasses = "/Script/GSCore.GSCData_SettingCollection"))
-	TArray<FSoftObjectPath> Collections;
-
 };

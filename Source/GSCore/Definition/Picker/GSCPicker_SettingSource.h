@@ -49,7 +49,7 @@ public:
 	//
 	// パラメータにアクセス可能なクラス
 	//
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, meta = (MustImplement = "GSCSettingSourceInterface"))
 	FSoftClassPath SourceClass;
 
 	//

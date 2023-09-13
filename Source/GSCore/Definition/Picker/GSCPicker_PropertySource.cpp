@@ -5,3 +5,9 @@
 #include UE_INLINE_GENERATED_CPP_BY_NAME(GSCPicker_PropertySource)
 
 const FGSCPicker_PropertySource FGSCPicker_PropertySource::Empty = FGSCPicker_PropertySource();
+
+
+bool FGSCPicker_PropertySource::IsValid() const
+{
+    return !SettingSourceName.IsNone() && !FunctionName.IsNone();
+}

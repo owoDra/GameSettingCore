@@ -58,6 +58,12 @@ public:
 	{
 	}
 
+public:
+	/**
+	 * 現在のデータが有効かどうかを返す
+	 */
+	bool IsValid() const;
+
 };
 
 
