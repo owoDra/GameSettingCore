@@ -5,11 +5,12 @@
 #include "Subsystems/EngineSubsystem.h"
 
 #include "Definition/Picker/GSCPicker_SettingSource.h"
+#include "Definition/Picker/GSCPicker_PropertySource.h"
 
 #include "GSCSubsystem.generated.h"
 
 class UObject;
-class UGSCData_SettingDefinition;
+class UGSCData_Setting;
 
 
 /**
@@ -84,12 +85,12 @@ public:
 	 * 指定した設定定義に応じた設定の値を FString 型で返す
 	 */
 	UFUNCTION(BlueprintCallable, Category = "GameSettings|Properties")
-	bool GetSettingValueAsString(const UGSCData_SettingDefinition* Definition, FString& OutValue);
+	bool GetSettingValueAsString(const UGSCData_Setting* Data, FString& OutValue);
 
 	/**
 	 * 指定した設定定義に応じた設定の値を FString 型で設定する
 	 */
 	UFUNCTION(BlueprintCallable, Category = "GameSettings|Properties")
-	bool SetSettingValueFromString(const UGSCData_SettingDefinition* Definition, FString NewValue);
+	bool SetSettingValueFromString(const UGSCData_Setting* Data, FString NewValue);
 
 };

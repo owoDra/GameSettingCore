@@ -5,8 +5,8 @@
 #include "Development/GSCDeveloperSettings.h"
 #include "Development/GSCLogChannels.h"
 #include "Subsystem/GSCSettingSourceInterface.h"
-#include "Definition/GSCData_SettingDefinition.h"
-#include "Definition/Picker/GSCPicker_PropertySource.h"
+#include "Definition/GSCData_Setting.h"
+#include "Definition/Format/GSCPropertyFormatBase.h"
 
 #include "PropertyPathHelpers.h"
 
@@ -189,19 +189,24 @@ bool UGSCSubsystem::RequestReloadSettings(FName SettingSourceName)
 
 #pragma region SettingProperties
 
-bool UGSCSubsystem::GetSettingValueAsString(const UGSCData_SettingDefinition* Definition, FString& OutValue)
+bool UGSCSubsystem::GetSettingValueAsString(const UGSCData_Setting* Data, FString& OutValue)
 {
 	OutValue = FString();
 
-	if (!Definition)
+	if (!Data)
 	{
 		return false;
 	}
 
-	const auto GetterSource{ Definition->GetGetterSource() };
+	auto Format{ Data->GetFormat<UGSCPropertyFormatBase>() };
+	if (Format)
+	{
+		return false;
+	}
+
+	const auto& GetterSource{ Format->GetGetterSource() };
 	if (!GetterSource.IsValid())
 	{
-		UE_LOG(LogGSC, Warning, TEXT("Invalid GetterSource defined in [%s]"), *GetNameSafe(Definition));
 		return false;
 	}
 
@@ -209,7 +214,7 @@ bool UGSCSubsystem::GetSettingValueAsString(const UGSCData_SettingDefinition* De
 	if (!SourceObject)
 	{
 		UE_LOG(LogGSC, Warning, TEXT("Could not find SourceObject from SettingSourceName(%s) of GetterSource defined in [%s]"),
-																	*GetterSource.SettingSourceName.ToString(), *GetNameSafe(Definition));
+			*GetterSource.SettingSourceName.ToString(), *GetNameSafe(Data));
 		return false;
 	}
 
@@ -224,25 +229,30 @@ bool UGSCSubsystem::GetSettingValueAsString(const UGSCData_SettingDefinition* De
 	return true;
 }
 
-bool UGSCSubsystem::SetSettingValueFromString(const UGSCData_SettingDefinition* Definition, FString NewValue)
+bool UGSCSubsystem::SetSettingValueFromString(const UGSCData_Setting* Data, FString NewValue)
 {
-	if (!Definition)
+	if (!Data)
 	{
 		return false;
 	}
 
-	const auto SetterSource{ Definition->GetSetterSource() };
+	auto Format{ Data->GetFormat<UGSCPropertyFormatBase>() };
+	if (Format)
+	{
+		return false;
+	}
+
+	const auto& SetterSource{ Format->GetSetterSource() };
 	if (!SetterSource.IsValid())
 	{
-		UE_LOG(LogGSC, Warning, TEXT("Invalid GetterSource defined in [%s]"), *GetNameSafe(Definition));
 		return false;
 	}
 
 	auto* SourceObject{ LoadOrGetSettingSourceObject(SetterSource.SettingSourceName) };
 	if (!SourceObject)
 	{
-		UE_LOG(LogGSC, Warning, TEXT("Could not find SourceObject from SettingSourceName(%s) of SetterSource defined in [%s]"),
-																	*SetterSource.SettingSourceName.ToString(), *GetNameSafe(Definition));
+		UE_LOG(LogGSC, Error, TEXT("Could not find SourceObject from SettingSourceName(%s) of SetterSource defined in [%s]"),
+			*SetterSource.SettingSourceName.ToString(), *GetNameSafe(Data));
 		return false;
 	}
 
@@ -250,7 +260,7 @@ bool UGSCSubsystem::SetSettingValueFromString(const UGSCData_SettingDefinition* 
 
 	if (!PropertyPathHelpers::SetPropertyValueFromString(SourceObject, DynamicPath, NewValue))
 	{
-		UE_LOG(LogGSC, Warning, TEXT("Failed to get value from [%s::%s]"), *GetNameSafe(SourceObject), *SetterSource.FunctionName.ToString());
+		UE_LOG(LogGSC, Error, TEXT("Failed to get value from [%s::%s]"), *GetNameSafe(SourceObject), *SetterSource.FunctionName.ToString());
 		return false;
 	}
 
