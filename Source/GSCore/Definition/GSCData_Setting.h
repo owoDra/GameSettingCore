@@ -9,7 +9,7 @@
 #include "GSCData_Setting.generated.h"
 
 class UGSCFormatBase;
-class UGSCEditCondition;
+class UGSCEditConditionBase;
 
 
 /**
@@ -32,6 +32,8 @@ public:
 	virtual EDataValidationResult IsDataValid(class FDataValidationContext& Context) override;
 #endif // WITH_EDITOR
 
+#pragma region Flags
+
 protected:
 	//
 	// 設定がもう使用されていないか
@@ -43,15 +45,19 @@ protected:
 	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = "Misc")
 	bool bDeprecated{ false };
 
-	//
-	// 設定メニューでこの設定に対してだけ特殊なウィジェットを適用させたい時参照する名前
-	// 
-	// Tips:
-	//  基本的には None のままで問題ない。
-	//
-	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = "GameSettings")
-	FName SpecificName{ NAME_None };
+public:
+	/**
+	 * この SettingData がすでに廃止されたものかどうかを返す
+	 */
+	UFUNCTION(BlueprintCallable, BlueprintPure, Category = "GameSetting")
+	bool IsDeprecated() const { return bDeprecated; }
 
+#pragma endregion
+
+
+#pragma region Format
+
+protected:
 	//
 	// この SettingData の役割と定義するフォーマットデータ
 	// 
@@ -61,6 +67,38 @@ protected:
 	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Instanced, Category = "GameSettings")
 	TObjectPtr<UGSCFormatBase> Format{ nullptr };
 
+public:
+	/**
+	 * この SettingData のフォーマットのクラスを返す
+	 */
+	UFUNCTION(BlueprintCallable, BlueprintPure, Category = "GameSetting")
+	TSubclassOf<UGSCFormatBase> GetFormatClass() const;
+
+#if WITH_EDITOR
+	/**
+	 * 指定した FormatClass のフォーマットを作成し現在のフォーマットから上書きする
+	 */
+	void SetFormatClass(TSubclassOf<UGSCFormatBase> InClass);
+#endif // WITH_EDITOR
+
+	/**
+	 * この SettingData のフォーマットを返す
+	 */
+	UFUNCTION(BlueprintCallable, BlueprintPure, Category = "GameSetting", meta = (DeterminesOutputType = "FormatClass", AllowAbstract))
+	UGSCFormatBase* GetFormatByClass(TSubclassOf<UGSCFormatBase> FormatClass) const { return Format; }
+
+	template<class FormatClass = UGSCFormatBase>
+	FormatClass* GetFormat() const
+	{
+		return Cast<FormatClass>(Format);
+	}
+
+#pragma endregion
+
+
+#pragma region EditCondition
+
+protected:
 	//
 	// この SettingData で定義された設定項目の編集可能状態を決定するデータ
 	// 
@@ -68,44 +106,9 @@ protected:
 	//  この項目を設定しない場合、この設定項目は常に編集可能な状態になります
 	//
 	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Instanced, Category = "GameSettings")
-	TObjectPtr<UGSCEditCondition> EditCondition{ nullptr };
+	TObjectPtr<UGSCEditConditionBase> EditCondition{ nullptr };
 
 public:
-	//
-	// 他の SettingData などによって SettingData の更新リクエストがあったときに呼び出されるデリゲート
-	// 
-	// Tips:
-	//  更新リクエスト時に UI を更新するといった処理を実装する際に使用可能
-	//
-	DECLARE_DYNAMIC_MULTICAST_DELEGATE(FGSCRefreshSettingRequestDelegate);
-	UPROPERTY(BlueprintAssignable, Transient)
-	FGSCRefreshSettingRequestDelegate OnRequestRefreshSetting;
-
-public:
-	/**
-	 * この SettingData で定義された設定項目の状態を更新リクエストする
-	 *
-	 * Tips:
-	 *  この関数は基本的に 他の設定項目 の値を変更した後に関連する この設定項目 を更新しなければいけない時や
-	 *  その他のシステムによって この設定項目 の状態を更新しなければいけないときに実行される。
-	 */
-	UFUNCTION(BlueprintCallable, Category = "GameSetting")
-	void RequestRefreshSetting();
-
-
-public:
-	/**
-	 * この SettingData がすでに廃止されたものかどうかを返す
-	 */
-	UFUNCTION(BlueprintCallable, BlueprintPure, Category = "GameSetting")
-	bool IsDeprecated() const { return bDeprecated; }
-
-	/**
-	 * SpecificName を返す
-	 */
-	UFUNCTION(BlueprintCallable, BlueprintPure, Category = "GameSetting")
-	virtual const FName& GetSpecificName() const { return SpecificName; }
-
 	/**
 	 * この SettingData で定義された設定項目の編集可能状態を返す
 	 */
@@ -113,21 +116,28 @@ public:
 	FGSCEditableState GetEditableState() const;
 
 	/**
-	 * この SettingData のフォーマットを返す
+	 * この SettingData の EditCondition を返す
 	 */
-	UFUNCTION(BlueprintCallable, BlueprintPure, Category = "GameSetting", meta = (DeterminesOutputType = "FormatClass", AllowAbstract))
-	const UGSCFormatBase* GetFormatByClass(TSubclassOf<UGSCFormatBase> FormatClass) const { return Format; }
+	UFUNCTION(BlueprintCallable, BlueprintPure, Category = "GameSetting", meta = (DeterminesOutputType = "EditConditionClass", AllowAbstract))
+	UGSCEditConditionBase* GetEditConditionByClass(TSubclassOf<UGSCEditConditionBase> EditConditionClass) const { return EditCondition; }
 
-	template<class FormatClass = UGSCFormatBase>
-	const FormatClass* GetFormat() const
+	template<class EditConditionClass = UGSCEditConditionBase>
+	EditConditionClass* GetEditCondition() const
 	{
-		return Cast<FormatClass>(Format);
+		return Cast<EditConditionClass>(EditCondition);
 	}
 
+#pragma endregion
+
+
+public:
 	/**
-	 * この SettingData のフォーマットのクラスを返す
+	 * この SettingData で定義された設定項目の状態を更新リクエストする
+	 *
+	 * Tips:
+	 *  この関数は基本的に 他の設定項目 の値を変更した後に関連する この設定項目 のUI表示を更新しなければいけない時に実行される。
 	 */
-	UFUNCTION(BlueprintCallable, BlueprintPure, Category = "GameSetting")
-	TSubclassOf<UGSCFormatBase> GetFormatClass() const;
+	UFUNCTION(BlueprintCallable, Category = "GameSetting")
+	void RequestRefreshSetting();
 
 };

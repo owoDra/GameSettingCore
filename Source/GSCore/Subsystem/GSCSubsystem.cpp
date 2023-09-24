@@ -13,6 +13,18 @@
 #include UE_INLINE_GENERATED_CPP_BY_NAME(GSCSubsystem)
 
 
+#pragma region Utilities
+
+UGSCSubsystem* UGSCSubsystem::Get()
+{
+	if (GEngine && GEngine->IsInitialized())
+	{
+		return GEngine->GetEngineSubsystem<UGSCSubsystem>();
+	}
+
+	return nullptr;
+}
+
 UObject* UGSCSubsystem::LoadOrGetSettingSourceObject(FName SettingSourceName)
 {
 	// キャッシュ済みの SettingSource か確認
@@ -53,35 +65,78 @@ UObject* UGSCSubsystem::LoadOrGetSettingSourceObject(FName SettingSourceName)
 	}
 }
 
+bool UGSCSubsystem::IsValidSettingSourceName(FName SettingSourceName) const
+{
+	if (CachedSettingSources.Contains(SettingSourceName))
+	{
+		return true;
+	}
+
+	const auto* Setting{ GetDefault<UGSCDeveloperSettings>() };
+
+	return Setting->SettingSources.Contains(SettingSourceName);
+}
+
+#pragma endregion
+
+
+#pragma region SettingDirtyState
+
+bool UGSCSubsystem::IsDirty(FName SettingSourceName) const
+{
+	return DirtySettingSources.Contains(SettingSourceName);
+}
+
+bool UGSCSubsystem::ContainDirty(const TArray<FName>& SettingSourceName) const
+{
+	for (const auto& Each : SettingSourceName)
+	{
+		if (IsDirty(Each))
+		{
+			return true;
+		}
+	}
+
+	return false;
+}
+
+bool UGSCSubsystem::ContainDirty(const TArray<FGSCPicker_SettingSourceName>& SettingSourceName) const
+{
+	for (const auto& Each : SettingSourceName)
+	{
+		if (IsDirty(Each.Name))
+		{
+			return true;
+		}
+	}
+
+	return false;
+}
+
+void UGSCSubsystem::MarkDirty(FName SettingSourceName)
+{
+	auto bAlreadySet{ false };
+	DirtySettingSources.Add(SettingSourceName, &bAlreadySet);
+
+	if (!bAlreadySet)
+	{
+		OnSettingSourceDirtyChanged.Broadcast(SettingSourceName, true);
+	}
+}
+
+void UGSCSubsystem::ClearDirty(FName SettingSourceName)
+{
+	DirtySettingSources.Remove(SettingSourceName);
+
+	OnSettingSourceDirtyChanged.Broadcast(SettingSourceName, false);
+}
+
+#pragma endregion
+
 
 #pragma region SettingSourceRequests
 
-void UGSCSubsystem::RequestApplySettingsForAll()
-{
-	const auto* Setting{ GetDefault<UGSCDeveloperSettings>() };
-	const auto SettingSources{ Setting->SettingSources };
-
-	for (const auto& KVP : SettingSources)
-	{
-		auto* SourceObject{ LoadOrGetSettingSourceObject(KVP.Key) };
-		if (!SourceObject)
-		{
-			// Tips: 現時点でまだ SourceObject の準備ができておらずにアクセスできない場合がある
-
-			continue;
-		}
-
-		auto Interface{ Cast<IGSCSettingSourceInterface>(SourceObject) };
-		if (!ensureMsgf(Interface, TEXT("%s does not implement IGSCSettingSourceInterface"), *GetNameSafe(SourceObject)))
-		{
-			continue;
-		}
-
-		Interface->RequestApplySettings();
-	}
-}
-
-bool UGSCSubsystem::RequestApplySettings(FName SettingSourceName)
+bool UGSCSubsystem::RequestApplySetting(FName SettingSourceName)
 {
 	auto* SourceObject{ LoadOrGetSettingSourceObject(SettingSourceName) };
 	if (!ensureMsgf(SourceObject, TEXT("Request made when SettingSource(%s) was not ready"), *SettingSourceName.ToString()))
@@ -89,85 +144,55 @@ bool UGSCSubsystem::RequestApplySettings(FName SettingSourceName)
 		return false;
 	}
 
-	auto Interface{ Cast<IGSCSettingSourceInterface>(SourceObject) };
-	if (!ensureMsgf(Interface, TEXT("%s does not implement IGSCSettingSourceInterface"), *GetNameSafe(SourceObject)))
+	if (!ensureMsgf(SourceObject->Implements<UGSCSettingSourceInterface>(), TEXT("%s does not implement IGSCSettingSourceInterface"), *GetNameSafe(SourceObject)))
 	{
 		return false;
 	}
 
-	return Interface->RequestResetSettings();
-}
-
-
-void UGSCSubsystem::RequestResetSettingsForAll()
-{
-	const auto* Setting{ GetDefault<UGSCDeveloperSettings>() };
-	const auto SettingSources{ Setting->SettingSources };
-
-	for (const auto& KVP : SettingSources)
-	{
-		auto* SourceObject{ LoadOrGetSettingSourceObject(KVP.Key) };
-		if (!SourceObject)
-		{
-			// Tips: 現時点でまだ SourceObject の準備ができておらずにアクセスできない場合がある
-
-			continue;
-		}
-
-		auto Interface{ Cast<IGSCSettingSourceInterface>(SourceObject) };
-		if (!ensureMsgf(Interface, TEXT("%s does not implement IGSCSettingSourceInterface"), *GetNameSafe(SourceObject)))
-		{
-			continue;
-		}
-
-		Interface->RequestResetSettings();
-	}
-}
-
-bool UGSCSubsystem::RequestResetSettings(FName SettingSourceName)
-{
-	auto* SourceObject{ LoadOrGetSettingSourceObject(SettingSourceName) };
-	if (!ensureMsgf(SourceObject, TEXT("Request made when SettingSource(%s) was not ready"), *SettingSourceName.ToString()))
+	if (!IGSCSettingSourceInterface::Execute_RequestApplySettings(SourceObject))
 	{
 		return false;
 	}
 
-	auto Interface{ Cast<IGSCSettingSourceInterface>(SourceObject) };
-	if (!ensureMsgf(Interface, TEXT("%s does not implement IGSCSettingSourceInterface"), *GetNameSafe(SourceObject)))
+	ClearDirty(SettingSourceName);
+
+	OnSettingSourceApplied.Broadcast(SettingSourceName);
+
+	return true;
+}
+
+bool UGSCSubsystem::RequestApplySettings(const TArray<FName>& SettingSourceNames)
+{
+	if (SettingSourceNames.IsEmpty())
 	{
 		return false;
 	}
 
-	return Interface->RequestResetSettings();
-}
-
-
-void UGSCSubsystem::RequestReloadSettingsForAll()
-{
-	const auto* Setting{ GetDefault<UGSCDeveloperSettings>() };
-	const auto SettingSources{ Setting->SettingSources };
-
-	for (const auto& KVP : SettingSources)
+	for (const auto& Each : SettingSourceNames)
 	{
-		auto* SourceObject{ LoadOrGetSettingSourceObject(KVP.Key) };
-		if (!SourceObject)
-		{
-			// Tips: 現時点でまだ SourceObject の準備ができておらずにアクセスできない場合がある
-
-			continue;
-		}
-
-		auto Interface{ Cast<IGSCSettingSourceInterface>(SourceObject) };
-		if (!ensureMsgf(Interface, TEXT("%s does not implement IGSCSettingSourceInterface"), *GetNameSafe(SourceObject)))
-		{
-			continue;
-		}
-
-		Interface->RequestReloadSettings();
+		RequestApplySetting(Each);
 	}
+
+	return true;
 }
 
-bool UGSCSubsystem::RequestReloadSettings(FName SettingSourceName)
+bool UGSCSubsystem::RequestApplySettings(const TArray<FGSCPicker_SettingSourceName>& SettingSourceNames)
+{
+	if (SettingSourceNames.IsEmpty())
+	{
+		return false;
+	}
+
+	for (const auto& Each : SettingSourceNames)
+	{
+		RequestApplySetting(Each.Name);
+	}
+
+	return true;
+}
+
+
+bool UGSCSubsystem::RequestResetSetting(FName SettingSourceName)
 {
 	auto* SourceObject{ LoadOrGetSettingSourceObject(SettingSourceName) };
 	if (!ensureMsgf(SourceObject, TEXT("Request made when SettingSource(%s) was not ready"), *SettingSourceName.ToString()))
@@ -175,13 +200,107 @@ bool UGSCSubsystem::RequestReloadSettings(FName SettingSourceName)
 		return false;
 	}
 
-	auto Interface{ Cast<IGSCSettingSourceInterface>(SourceObject) };
-	if (!ensureMsgf(Interface, TEXT("%s does not implement IGSCSettingSourceInterface"), *GetNameSafe(SourceObject)))
+	if (!ensureMsgf(SourceObject->Implements<UGSCSettingSourceInterface>(), TEXT("%s does not implement IGSCSettingSourceInterface"), *GetNameSafe(SourceObject)))
 	{
 		return false;
 	}
 
-	return Interface->RequestReloadSettings();
+	if (!IGSCSettingSourceInterface::Execute_RequestResetSettings(SourceObject))
+	{
+		return false;
+	}
+
+	MarkDirty(SettingSourceName);
+
+	OnSettingSourceReset.Broadcast(SettingSourceName);
+
+	return true;
+}
+
+bool UGSCSubsystem::RequestResetSettings(const TArray<FName>& SettingSourceNames)
+{
+	if (SettingSourceNames.IsEmpty())
+	{
+		return false;
+	}
+
+	for (const auto& Each : SettingSourceNames)
+	{
+		RequestResetSetting(Each);
+	}
+
+	return true;
+}
+
+bool UGSCSubsystem::RequestResetSettings(const TArray<FGSCPicker_SettingSourceName>& SettingSourceNames)
+{
+	if (SettingSourceNames.IsEmpty())
+	{
+		return false;
+	}
+
+	for (const auto& Each : SettingSourceNames)
+	{
+		RequestResetSetting(Each.Name);
+	}
+
+	return true;
+}
+
+
+bool UGSCSubsystem::RequestReloadSetting(FName SettingSourceName)
+{
+	auto* SourceObject{ LoadOrGetSettingSourceObject(SettingSourceName) };
+	if (!ensureMsgf(SourceObject, TEXT("Request made when SettingSource(%s) was not ready"), *SettingSourceName.ToString()))
+	{
+		return false;
+	}
+
+	if (!ensureMsgf(SourceObject->Implements<UGSCSettingSourceInterface>(), TEXT("%s does not implement IGSCSettingSourceInterface"), *GetNameSafe(SourceObject)))
+	{
+		return false;
+	}
+
+	if (!IGSCSettingSourceInterface::Execute_RequestReloadSettings(SourceObject))
+	{
+		return false;
+	}
+
+	ClearDirty(SettingSourceName);
+
+	OnSettingSourceReloaded.Broadcast(SettingSourceName);
+
+	return true;
+}
+
+bool UGSCSubsystem::RequestReloadSettings(const TArray<FName>& SettingSourceNames)
+{
+	if (SettingSourceNames.IsEmpty())
+	{
+		return false;
+	}
+
+	for (const auto& Each : SettingSourceNames)
+	{
+		RequestReloadSetting(Each);
+	}
+
+	return true;
+}
+
+bool UGSCSubsystem::RequestReloadSettings(const TArray<FGSCPicker_SettingSourceName>& SettingSourceNames)
+{
+	if (SettingSourceNames.IsEmpty())
+	{
+		return false;
+	}
+
+	for (const auto& Each : SettingSourceNames)
+	{
+		RequestReloadSetting(Each.Name);
+	}
+
+	return true;
 }
 
 #pragma endregion
@@ -205,6 +324,13 @@ bool UGSCSubsystem::GetSettingValueAsString(const UGSCData_Setting* Data, FStrin
 	}
 
 	const auto& GetterSource{ Format->GetGetterSource() };
+	return GetSettingValueAsString(Data, GetterSource, OutValue);
+}
+
+bool UGSCSubsystem::GetSettingValueAsString(const UObject* Context, const FGSCPicker_PropertySource& GetterSource, FString& OutValue)
+{
+	OutValue = FString();
+
 	if (!GetterSource.IsValid())
 	{
 		return false;
@@ -214,7 +340,7 @@ bool UGSCSubsystem::GetSettingValueAsString(const UGSCData_Setting* Data, FStrin
 	if (!SourceObject)
 	{
 		UE_LOG(LogGSC, Warning, TEXT("Could not find SourceObject from SettingSourceName(%s) of GetterSource defined in [%s]"),
-			*GetterSource.SettingSourceName.ToString(), *GetNameSafe(Data));
+			*GetterSource.SettingSourceName.ToString(), *GetNameSafe(Context));
 		return false;
 	}
 
@@ -228,6 +354,7 @@ bool UGSCSubsystem::GetSettingValueAsString(const UGSCData_Setting* Data, FStrin
 
 	return true;
 }
+
 
 bool UGSCSubsystem::SetSettingValueFromString(const UGSCData_Setting* Data, FString NewValue)
 {
@@ -243,6 +370,11 @@ bool UGSCSubsystem::SetSettingValueFromString(const UGSCData_Setting* Data, FStr
 	}
 
 	const auto& SetterSource{ Format->GetSetterSource() };
+	return SetSettingValueFromString(Data, SetterSource, NewValue);
+}
+
+bool UGSCSubsystem::SetSettingValueFromString(const UObject* Context, const FGSCPicker_PropertySource& SetterSource, FString NewValue)
+{
 	if (!SetterSource.IsValid())
 	{
 		return false;
@@ -252,7 +384,7 @@ bool UGSCSubsystem::SetSettingValueFromString(const UGSCData_Setting* Data, FStr
 	if (!SourceObject)
 	{
 		UE_LOG(LogGSC, Error, TEXT("Could not find SourceObject from SettingSourceName(%s) of SetterSource defined in [%s]"),
-			*SetterSource.SettingSourceName.ToString(), *GetNameSafe(Data));
+			*SetterSource.SettingSourceName.ToString(), *GetNameSafe(Context));
 		return false;
 	}
 
@@ -264,7 +396,89 @@ bool UGSCSubsystem::SetSettingValueFromString(const UGSCData_Setting* Data, FStr
 		return false;
 	}
 
+	MarkDirty(SetterSource.SettingSourceName);
+
 	return true;
+}
+
+
+bool UGSCSubsystem::GetSettingDefaultAsString(const UGSCData_Setting* Data, FString& OutValue)
+{
+	OutValue = FString();
+
+	if (!Data)
+	{
+		return false;
+	}
+
+	auto Format{ Data->GetFormat<UGSCPropertyFormatBase>() };
+	if (Format)
+	{
+		return false;
+	}
+
+	const auto& DefaultSource{ Format->GetDefaultSource() };
+	return GetSettingDefaultAsString(Data, DefaultSource, OutValue);
+}
+
+bool UGSCSubsystem::GetSettingDefaultAsString(const UObject* Context, const FGSCPicker_PropertySource& DefaultSource, FString& OutValue)
+{
+	OutValue = FString();
+
+	if (!DefaultSource.IsValid())
+	{
+		return false;
+	}
+
+	auto* SourceObject{ LoadOrGetSettingSourceObject(DefaultSource.SettingSourceName) };
+	if (!SourceObject)
+	{
+		UE_LOG(LogGSC, Warning, TEXT("Could not find SourceObject from SettingSourceName(%s) of DefaultSource defined in [%s]"),
+			*DefaultSource.SettingSourceName.ToString(), *GetNameSafe(Context));
+		return false;
+	}
+
+	auto* SourceObjectCDO{ GetMutableDefault<UObject>(SourceObject->GetClass()) };
+	FCachedPropertyPath DynamicPath{ DefaultSource.FunctionName.ToString() };
+
+	if (!PropertyPathHelpers::GetPropertyValueAsString(SourceObjectCDO, DynamicPath, OutValue))
+	{
+		UE_LOG(LogGSC, Warning, TEXT("Failed to get value from [%s::%s]"), *GetNameSafe(SourceObjectCDO), *DefaultSource.FunctionName.ToString());
+		return false;
+	}
+
+	return true;
+}
+
+
+bool UGSCSubsystem::SetSettingValueToDefault(const UGSCData_Setting* Data)
+{
+	if (!Data)
+	{
+		return false;
+	}
+
+	auto Format{ Data->GetFormat<UGSCPropertyFormatBase>() };
+	if (Format)
+	{
+		return false;
+	}
+
+	const auto& DefaultSource{ Format->GetDefaultSource() };
+	const auto& SetterSource{ Format->GetSetterSource() };
+	return SetSettingValueToDefault(Data, DefaultSource, SetterSource);
+}
+
+bool UGSCSubsystem::SetSettingValueToDefault(const UObject* Context, const FGSCPicker_PropertySource& DefaultSource, const FGSCPicker_PropertySource& SetterSource)
+{
+	FString StringValue{ FString() };
+
+	if (GetSettingDefaultAsString(Context, DefaultSource, StringValue))
+	{
+		return SetSettingValueFromString(Context, SetterSource, StringValue);
+	}
+
+	return false;
 }
 
 #pragma endregion

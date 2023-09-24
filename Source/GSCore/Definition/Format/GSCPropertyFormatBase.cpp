@@ -8,41 +8,71 @@
 
 #include "PropertyPathHelpers.h"
 
+#if WITH_EDITOR
+
+#include "Misc/DataValidation.h"
+
+#endif // WITH_EDITOR
+
 #include UE_INLINE_GENERATED_CPP_BY_NAME(GSCPropertyFormatBase)
+
+
+#if WITH_EDITOR
+
+#define LOCTEXT_NAMESPACE "PropertyFormatBase"
+
+EDataValidationResult UGSCPropertyFormatBase::IsDataValid(FDataValidationContext& Context)
+{
+	auto Result{ CombineDataValidationResults(Super::IsDataValid(Context), EDataValidationResult::Valid) };
+	auto DataName{ FText::FromString(GetNameSafe(GetOuter())) };
+
+	if (!GetGetterSource().IsValid())
+	{
+		Result = CombineDataValidationResults(Result, EDataValidationResult::Invalid);
+		Context.AddError(FText::Format(
+			LOCTEXT("InvalidGetterSource", "GetterSource is not set in [{0}]"), DataName));
+	}
+
+	if (!GetSetterSource().IsValid())
+	{
+		Result = CombineDataValidationResults(Result, EDataValidationResult::Invalid);
+		Context.AddError(FText::Format(
+			LOCTEXT("InvalidSetterSource", "SetterSource is not set in [{0}]"), DataName));
+	}
+
+	if (!GetDefaultSource().IsValid())
+	{
+		Result = CombineDataValidationResults(Result, EDataValidationResult::Invalid);
+		Context.AddError(FText::Format(
+			LOCTEXT("InvalidDefaultSource", "DefaultSource is not set in [{0}]"), DataName));
+	}
+
+	return Result;
+}
+
+#undef LOCTEXT_NAMESPACE
+
+#endif // WITH_EDITOR
 
 
 void UGSCPropertyFormatBase::HandleRefreshSettingRequest()
 {
-	TrySetPropertyToDesiredValue();
+	OnRequestRefreshSetting.Broadcast(true);
 }
 
 void UGSCPropertyFormatBase::HandleSettingValueChanged()
 {
+	OnRequestRefreshSetting.Broadcast(false);
+
 	TryRefreshRelatedSettings();
 }
 
 
 bool UGSCPropertyFormatBase::SetPropertyValueInternal(const FGSCPicker_PropertySource& SetterSource, FString NewValue)
 {
-	if (SetterSource.IsValid() && GEngine && GEngine->IsInitialized())
+	if (auto* Subsystem{ UGSCSubsystem::Get() })
 	{
-		auto* Subsystem{ GEngine->GetEngineSubsystem<UGSCSubsystem>() };
-
-		auto* SourceObject{ Subsystem->LoadOrGetSettingSourceObject(SetterSource.SettingSourceName) };
-		if (!SourceObject)
-		{
-			UE_LOG(LogGSC, Error, TEXT("Could not find SourceObject from SettingSourceName(%s) of SetterSource defined in [%s]"),
-				*SetterSource.SettingSourceName.ToString(), *GetNameSafe(GetOuter()));
-			return false;
-		}
-
-		FCachedPropertyPath DynamicPath{ SetterSource.FunctionName.ToString() };
-		if (!PropertyPathHelpers::SetPropertyValueFromString(SourceObject, DynamicPath, NewValue))
-		{
-			UE_LOG(LogGSC, Error, TEXT("Failed to set value from [%s::%s]"), *GetNameSafe(SourceObject), *SetterSource.FunctionName.ToString());
-			return false;
-		}
-		else
+		if (Subsystem->SetSettingValueFromString(GetOuter(), SetterSource, NewValue))
 		{
 			HandleSettingValueChanged();
 			return true;
@@ -56,28 +86,31 @@ bool UGSCPropertyFormatBase::GetPropertyValueInternal(const FGSCPicker_PropertyS
 {
 	OutValue = FString();
 
-	if (GetterSource.IsValid() && GEngine && GEngine->IsInitialized())
+	if (auto* Subsystem{ UGSCSubsystem::Get() })
 	{
-		auto* Subsystem{ GEngine->GetEngineSubsystem<UGSCSubsystem>() };
+		return Subsystem->GetSettingValueAsString(GetOuter(), GetterSource, OutValue);
+	}
 
-		auto* SourceObject{ Subsystem->LoadOrGetSettingSourceObject(GetterSource.SettingSourceName) };
-		if (!SourceObject)
-		{
-			UE_LOG(LogGSC, Error, TEXT("Could not find SourceObject from SettingSourceName(%s) of GetterSource defined in [%s]"),
-				*GetterSource.SettingSourceName.ToString(), *GetNameSafe(GetOuter()));
-			return false;
-		}
+	return false;
+}
 
-		FCachedPropertyPath DynamicPath{ GetterSource.FunctionName.ToString() };
-		if (!PropertyPathHelpers::GetPropertyValueAsString(SourceObject, DynamicPath, OutValue))
-		{
-			UE_LOG(LogGSC, Error, TEXT("Failed to get value from [%s::%s]"), *GetNameSafe(SourceObject), *GetterSource.FunctionName.ToString());
-			return false;
-		}
-		else
-		{
-			return true;
-		}
+bool UGSCPropertyFormatBase::GetPropertyDefaultInternal(const FGSCPicker_PropertySource& DefaultSource, FString& OutValue)
+{
+	OutValue = FString();
+
+	if (auto* Subsystem{ UGSCSubsystem::Get() })
+	{
+		return Subsystem->GetSettingDefaultAsString(GetOuter(), DefaultSource, OutValue);
+	}
+
+	return false;
+}
+
+bool UGSCPropertyFormatBase::SetPropertyToDefault()
+{
+	if (auto* Subsystem{ UGSCSubsystem::Get() })
+	{
+		return Subsystem->SetSettingValueToDefault(GetOuter(), GetDefaultSource(), GetSetterSource());
 	}
 
 	return false;
@@ -88,18 +121,9 @@ void UGSCPropertyFormatBase::TryRefreshRelatedSettings()
 {
 	for (const auto& SettingData : RelatedSettings)
 	{
-		if (SettingData)
+		if (SettingData.IsValid())
 		{
 			SettingData->RequestRefreshSetting();
 		}
-	}
-}
-
-void UGSCPropertyFormatBase::TrySetPropertyToDesiredValue()
-{
-	FString DesiredValue;
-	if (GetPropertyValueInternal(GetDesiredValueSource(), DesiredValue))
-	{
-		SetPropertyValueInternal(GetSetterSource(), DesiredValue);
 	}
 }

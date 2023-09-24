@@ -6,11 +6,15 @@
 
 #include "Definition/Picker/GSCPicker_SettingSource.h"
 #include "Definition/Picker/GSCPicker_PropertySource.h"
+#include "Definition/Picker/GSCPicker_SettingSourceName.h"
 
 #include "GSCSubsystem.generated.h"
 
 class UObject;
 class UGSCData_Setting;
+
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FGSCSettingSourceDirtyChangeDelegate, FName, SettingSourceName, bool, NewState);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FGSCSettingSourceActionDelegate, FName, SettingSourceName);
 
 
 /**
@@ -32,52 +36,127 @@ protected:
 	UPROPERTY(Transient)
 	TMap<FName, UGSCPickerTemplate_SettingSource::FStaticContextTemplate> CachedSettingSources;
 
+	//
+	// 編集未適用状態の SettingSource の名前リスト
+	// 
+	UPROPERTY(Transient)
+	TSet<FName> DirtySettingSources;
+
+protected:
+	//
+	// SettingSource の編集未適応状態が変更されたことを知らせるデリゲート
+	//
+	UPROPERTY(BlueprintAssignable, Transient)
+	FGSCSettingSourceDirtyChangeDelegate OnSettingSourceDirtyChanged;
+
+	//
+	// SettingSource を適用させたことを知らせるデリゲート
+	//
+	UPROPERTY(BlueprintAssignable, Transient)
+	FGSCSettingSourceActionDelegate OnSettingSourceApplied;
+
+	//
+	// SettingSource の復元させたことを知らせるデリゲート
+	//
+	UPROPERTY(BlueprintAssignable, Transient)
+	FGSCSettingSourceActionDelegate OnSettingSourceReloaded;
+
+	//
+	// SettingSource のリセットさせたことを知らせるデリゲート
+	//
+	UPROPERTY(BlueprintAssignable, Transient)
+	FGSCSettingSourceActionDelegate OnSettingSourceReset;
+
 public:
 	/**
-	 * デベロッパー設定で登録されたデータソースオブジェクトを取得する
+	 * このサブシステムを取得する
 	 */
-	UFUNCTION(BlueprintCallable, BlueprintPure, Category = "GameSettings")
+	static UGSCSubsystem* Get();
+
+	/**
+	 * デベロッパー設定で登録された SettingSource オブジェクトを取得する
+	 */
+	UFUNCTION(BlueprintCallable, Category = "Utilities")
 	UObject* LoadOrGetSettingSourceObject(FName SettingSourceName);
 
+	/**
+	 * SettingSourceName が登録された SettingSourceName に含まれているかを返す
+	 */
+	UFUNCTION(BlueprintCallable, BlueprintPure, Category = "Utilities")
+	bool IsValidSettingSourceName(FName SettingSourceName) const;
+
 
 public:
 	/**
-	 * 登録されているすべての SettingSource に対して 設定適用リクエストを行う
+	 * 指定した SettingSource が編集未適用状態かを返す
 	 */
-	UFUNCTION(BlueprintCallable, Category = "GameSettings|Requests")
-	void RequestApplySettingsForAll();
+	UFUNCTION(BlueprintCallable, BlueprintPure, Category = "GameSettings")
+	bool IsDirty(FName SettingSourceName) const;
 
+	/**
+	 * 指定した複数の SettingSource の中に編集未適用状態のものがあるかを返す
+	 */
+	UFUNCTION(BlueprintCallable, BlueprintPure, Category = "GameSettings")
+	bool ContainDirty(const TArray<FName>& SettingSourceName) const;
+
+	bool ContainDirty(const TArray<FGSCPicker_SettingSourceName>& SettingSourceName) const;
+
+protected:
+	/**
+	 * 指定した SettingSource に編集未適用フラグを付ける
+	 */
+	void MarkDirty(FName SettingSourceName);
+
+	/**
+	 * 指定した SettingSource の編集未適用フラグを消す
+	 */
+	void ClearDirty(FName SettingSourceName);
+
+
+public:
 	/**
 	 * 特定の SettingSource に対して 設定適用リクエストを行う
 	 */
 	UFUNCTION(BlueprintCallable, Category = "GameSettings|Requests")
-	bool RequestApplySettings(FName SettingSourceName);
+	bool RequestApplySetting(FName SettingSourceName);
 
-public:
 	/**
-	 * 登録されているすべての SettingSource に対して 設定リセットリクエストを行う
+	 * 複数の SettingSource に対して 設定適用リクエストを行う
 	 */
 	UFUNCTION(BlueprintCallable, Category = "GameSettings|Requests")
-	void RequestResetSettingsForAll();
+	bool RequestApplySettings(const TArray<FName>& SettingSourceNames);
 
+	bool RequestApplySettings(const TArray<FGSCPicker_SettingSourceName>& SettingSourceNames);
+
+public:
 	/**
 	 * 特定の SettingSource に対して 設定リセットリクエストを行う
 	 */
 	UFUNCTION(BlueprintCallable, Category = "GameSettings|Requests")
-	bool RequestResetSettings(FName SettingSourceName);
+	bool RequestResetSetting(FName SettingSourceName);
 
-public:
 	/**
-	 * 登録されているすべての SettingSource に対して 設定再読み込みリクエストを行う
+	 * 複数の SettingSource に対して 設定リセットリクエストを行う
 	 */
 	UFUNCTION(BlueprintCallable, Category = "GameSettings|Requests")
-	void RequestReloadSettingsForAll();
+	bool RequestResetSettings(const TArray<FName>& SettingSourceNames);
 
+	bool RequestResetSettings(const TArray<FGSCPicker_SettingSourceName>& SettingSourceNames);
+
+public:
 	/**
 	 * 特定の SettingSource に対して 設定再読み込みリクエストを行う
 	 */
 	UFUNCTION(BlueprintCallable, Category = "GameSettings|Requests")
-	bool RequestReloadSettings(FName SettingSourceName);
+	bool RequestReloadSetting(FName SettingSourceName);
+
+	/**
+	 * 複数の SettingSource に対して 設定再読み込みリクエストを行う
+	 */
+	UFUNCTION(BlueprintCallable, Category = "GameSettings|Requests")
+	bool RequestReloadSettings(const TArray<FName>& SettingSourceNames);
+
+	bool RequestReloadSettings(const TArray<FGSCPicker_SettingSourceName>& SettingSourceNames);
 
 
 public:
@@ -87,10 +166,33 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "GameSettings|Properties")
 	bool GetSettingValueAsString(const UGSCData_Setting* Data, FString& OutValue);
 
+	bool GetSettingValueAsString(const UObject* Context, const FGSCPicker_PropertySource& GetterSource, FString& OutValue);
+
 	/**
 	 * 指定した設定定義に応じた設定の値を FString 型で設定する
 	 */
 	UFUNCTION(BlueprintCallable, Category = "GameSettings|Properties")
 	bool SetSettingValueFromString(const UGSCData_Setting* Data, FString NewValue);
+
+	bool SetSettingValueFromString(const UObject* Context, const FGSCPicker_PropertySource& SetterSource, FString NewValue);
+
+	/**
+	 * 指定した設定定義に応じた設定のデフォルト値を FString 型で返す
+	 */
+	UFUNCTION(BlueprintCallable, Category = "GameSettings|Properties")
+	bool GetSettingDefaultAsString(const UGSCData_Setting* Data, FString& OutValue);
+
+	bool GetSettingDefaultAsString(const UObject* Context, const FGSCPicker_PropertySource& DefaultSource, FString& OutValue);
+
+	/**
+	 * 指定した設定定義に応じた設定の値を デフォルト値に戻す
+	 * 
+	 * 注意:
+	 *  内部的に FString 型 を通して設定を変更するため FString への変換が不可能な型の場合は使用できません。
+	 */
+	UFUNCTION(BlueprintCallable, Category = "GameSettings|Properties")
+	bool SetSettingValueToDefault(const UGSCData_Setting* Data);
+
+	bool SetSettingValueToDefault(const UObject* Context, const FGSCPicker_PropertySource& DefaultSource, const FGSCPicker_PropertySource& SetterSource);
 
 };

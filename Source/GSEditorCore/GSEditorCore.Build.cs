@@ -20,9 +20,9 @@ public class GSEditorCore : ModuleRules
 			{
 				"Core",
 				"CoreUObject",
-				"InputCore",
 				"Engine",
-				"Slate",
+                "UnrealEd",
+                "Slate",
 				"SlateCore",
 				"UMG",
 			}
@@ -36,6 +36,8 @@ public class GSEditorCore : ModuleRules
 				"PropertyPath",
                 "DeveloperSettings",
                 "ToolWidgets",
+                "ClassViewer",
+                "AssetTools",
                 "GSCore",
             }
 		);

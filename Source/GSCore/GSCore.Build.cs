@@ -21,13 +21,12 @@ public class GSCore : ModuleRules
 			{
 				"Core",
 				"CoreUObject",
-				"InputCore",
 				"Engine",
 				"Slate",
 				"SlateCore",
 				"UMG",
-				"GameplayTags",
-			}
+                "InputCore",
+            }
 		);
 			
 		
@@ -37,9 +36,6 @@ public class GSCore : ModuleRules
 				"ApplicationCore",
 				"PropertyPath",
                 "DeveloperSettings",
-                "BlueprintGraph",
-				"GraphEditor",
-				"KismetCompiler",
             }
 		);
 	}

@@ -3,11 +3,9 @@
 #include "GSCData_Setting.h"
 
 #include "Definition/Format/GSCFormatBase.h"
-#include "Definition/EditCondition/GSCEditCondition.h"
+#include "Definition/EditCondition/GSCEditConditionBase.h"
 
 #if WITH_EDITOR
-
-#include "Definition/Format/GSCPropertyFormatBase.h"
 
 #include "Misc/DataValidation.h"
 
@@ -16,7 +14,7 @@
 #include UE_INLINE_GENERATED_CPP_BY_NAME(GSCData_Setting)
 
 
-#define LOCTEXT_NAMESPACE "UGSCData_Setting"
+#define LOCTEXT_NAMESPACE "SettingData"
 
 UGSCData_Setting::UGSCData_Setting(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer)
 {
@@ -27,34 +25,19 @@ UGSCData_Setting::UGSCData_Setting(const FObjectInitializer& ObjectInitializer) 
 EDataValidationResult UGSCData_Setting::IsDataValid(FDataValidationContext& Context)
 {
 	auto Result{ CombineDataValidationResults(Super::IsDataValid(Context), EDataValidationResult::Valid) };
+	auto DataName{ FText::FromString(GetNameSafe(this)) };
 
 	if (!Format)
 	{
 		Result = CombineDataValidationResults(Result, EDataValidationResult::Invalid);
 		Context.AddError(FText::Format(
-			LOCTEXT("InvalidFormat", "Invalid Format defined in [{0}]"), this));
+			LOCTEXT("InvalidFormat", "No Format selected in [{0}]"), DataName));
 	}
 	else
 	{
-		if (auto* PropertyFormat{ Cast<UGSCPropertyFormatBase>(Format) })
-		{
-			if (!PropertyFormat->GetGetterSource().IsValid())
-			{
-				Result = CombineDataValidationResults(Result, EDataValidationResult::Invalid);
-				Context.AddError(FText::Format(
-					LOCTEXT("InvalidGetterSource", "Invalid GetterSource defined in [{0}]"), this));
-			}
-
-			if (!PropertyFormat->GetSetterSource().IsValid())
-			{
-				Result = CombineDataValidationResults(Result, EDataValidationResult::Invalid);
-				Context.AddError(FText::Format(
-					LOCTEXT("InvalidSetterSource", "Invalid SetterSource defined in [{0}]"), this));
-			}
-		}
+		Result = CombineDataValidationResults(Result, Format->IsDataValid(Context));
 	}
 	
-
 	return Result;
 }
 
@@ -63,12 +46,13 @@ EDataValidationResult UGSCData_Setting::IsDataValid(FDataValidationContext& Cont
 
 void UGSCData_Setting::RequestRefreshSetting()
 {
-	if (Format)
-	{
-		Format->HandleRefreshSettingRequest();
-	}
+	check(Format);
+	Format->HandleRefreshSettingRequest();
 
-	OnRequestRefreshSetting.Broadcast();
+	if (EditCondition)
+	{
+		EditCondition->HandleRefreshSettingRequest();
+	}
 }
 
 
@@ -96,5 +80,17 @@ TSubclassOf<UGSCFormatBase> UGSCData_Setting::GetFormatClass() const
 
 	return nullptr;
 }
+
+#if WITH_EDITOR
+
+void UGSCData_Setting::SetFormatClass(TSubclassOf<UGSCFormatBase> InClass)
+{
+	if (InClass)
+	{
+		Format = NewObject<UGSCFormatBase>(this, InClass);
+	}
+}
+
+#endif // WITH_EDITOR
 
 #undef LOCTEXT_NAMESPACE
