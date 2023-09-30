@@ -34,7 +34,7 @@ void FGSCSettingSourceNamePickerCustomization::UnregisterToPropertyEditorModule(
 
 void FGSCSettingSourceNamePickerCustomization::CustomizeHeader(TSharedRef<IPropertyHandle> PropertyHandle, FDetailWidgetRow& HeaderRow, IPropertyTypeCustomizationUtils& CustomizationUtils)
 {
-	HeaderRow
+	/*HeaderRow
 		.NameContent()
 		[
 			PropertyHandle->CreatePropertyNameWidget()
@@ -42,11 +42,8 @@ void FGSCSettingSourceNamePickerCustomization::CustomizeHeader(TSharedRef<IPrope
 		.ValueContent()
 		[
 			PropertyHandle->CreatePropertyValueWidget()
-		];
-}
+		];*/
 
-void FGSCSettingSourceNamePickerCustomization::CustomizeChildren(TSharedRef<IPropertyHandle> PropertyHandle, IDetailChildrenBuilder& ChildBuilder, IPropertyTypeCustomizationUtils& CustomizationUtils)
-{
 	// 変数変更時のコールバックを設定
 
 	ParentPropertyHandle = PropertyHandle;
@@ -101,13 +98,11 @@ void FGSCSettingSourceNamePickerCustomization::CustomizeChildren(TSharedRef<IPro
 
 		// 関数名の編集箇所に関するウィジェットを構築する
 
-		ChildBuilder
-			.AddCustomRow(SourceNamePropertyHandle->GetPropertyDisplayName())
-			.Visibility(EVisibility::Visible)
+		HeaderRow
 			.NameContent()
 			[
 				SNew(STextBlock)
-					.Text(SourceNamePropertyHandle->GetPropertyDisplayName())
+					.Text(ParentPropertyHandle->GetPropertyDisplayName())
 					.Font(IDetailLayoutBuilder::GetDetailFont())
 			]
 			.ValueContent()
@@ -121,6 +116,84 @@ void FGSCSettingSourceNamePickerCustomization::CustomizeChildren(TSharedRef<IPro
 										]
 			];
 	}
+}
+
+void FGSCSettingSourceNamePickerCustomization::CustomizeChildren(TSharedRef<IPropertyHandle> PropertyHandle, IDetailChildrenBuilder& ChildBuilder, IPropertyTypeCustomizationUtils& CustomizationUtils)
+{
+	//// 変数変更時のコールバックを設定
+
+	//ParentPropertyHandle = PropertyHandle;
+
+	//// 変数 SourceClass についての項目を追加
+
+	//SourceNamePropertyHandle = PropertyHandle->GetChildHandle(GET_MEMBER_NAME_CHECKED(FGSCPicker_SettingSourceName, Name));
+	//if (SourceNamePropertyHandle.IsValid())
+	//{
+	//	// CombBox のデータを初期化する
+
+	//	InitSuggestList();
+
+	//	RefreshSuggestList();
+
+	//	// 選択中の関数名についてのウィジェットを構築
+
+	//	FText TextRowText;
+	//	SourceNamePropertyHandle->GetValueAsDisplayText(TextRowText);
+
+	//	const auto TextRowWidgetRef
+	//	{
+	//		SNew(STextBlock)
+	//			.Text(TextRowText)
+	//	};
+
+	//	RowTextWidget = TextRowWidgetRef;
+
+	//	// 候補リストについてのウィジェットを構築
+
+	//	const auto SearchableComboBoxRef
+	//	{
+	//		SNew(SSearchableComboBox)
+	//			.OptionsSource(&SuggestListOptions)
+	//			.OnGenerateWidget_Lambda(
+	//				[](const TSharedPtr<FString> InItem) -> TSharedRef<SWidget>
+	//				{
+	//					return SNew(STextBlock).Text(FText::FromString(*InItem));
+	//				}
+	//			)
+	//			.OnSelectionChanged(this, &ThisClass::OnSuggestSelected)
+	//			.ContentPadding(2.f)
+	//			.MaxListHeight(200.f)
+	//			.IsEnabled(true)
+	//			.Content()
+	//			[
+	//				TextRowWidgetRef
+	//			]
+	//	};
+
+	//	SuggestListWidget = SearchableComboBoxRef;
+
+	//	// 関数名の編集箇所に関するウィジェットを構築する
+
+	//	ChildBuilder
+	//		.AddCustomRow(SourceNamePropertyHandle->GetPropertyDisplayName())
+	//		.Visibility(EVisibility::Visible)
+	//		.NameContent()
+	//		[
+	//			SNew(STextBlock)
+	//				.Text(SourceNamePropertyHandle->GetPropertyDisplayName())
+	//				.Font(IDetailLayoutBuilder::GetDetailFont())
+	//		]
+	//		.ValueContent()
+	//		[
+	//			SNew(SVerticalBox) + SVerticalBox::Slot()
+	//									.AutoHeight()
+	//									.VAlign(VAlign_Fill)
+	//									.Padding(0.f)
+	//									[
+	//										SearchableComboBoxRef
+	//									]
+	//		];
+	//}
 }
 
 

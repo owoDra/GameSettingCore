@@ -19,7 +19,7 @@ UGSCSwitchPropertyFormatBase::UGSCSwitchPropertyFormatBase()
 bool UGSCSwitchPropertyFormatBase::SetPropertyValue(bool NewValue)
 {
     const FString StringValue{ NewValue ? TEXT("true") : TEXT("false") };
-    return SetPropertyValueInternal(GetSetterSource(), StringValue);
+    return SetPropertyValueInternal(StringValue);
 }
 
 bool UGSCSwitchPropertyFormatBase::GetPropertyValue(bool& OutValue)
@@ -27,7 +27,7 @@ bool UGSCSwitchPropertyFormatBase::GetPropertyValue(bool& OutValue)
     OutValue = false;
 
     FString StringValue;
-    auto bSuccess{ GetPropertyValueInternal(GetGetterSource(), StringValue) };
+    auto bSuccess{ GetPropertyValueInternal(StringValue) };
 
     OutValue = StringValue.ToBool();
 
@@ -39,7 +39,7 @@ bool UGSCSwitchPropertyFormatBase::GetPropertyDefault(bool& OutValue)
     OutValue = false;
 
     FString StringValue;
-    auto bSuccess{ GetPropertyDefaultInternal(GetDefaultSource(), StringValue) };
+    auto bSuccess{ GetPropertyDefaultInternal(StringValue) };
 
     OutValue = StringValue.ToBool();
 

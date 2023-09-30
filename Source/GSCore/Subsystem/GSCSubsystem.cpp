@@ -308,23 +308,38 @@ bool UGSCSubsystem::RequestReloadSettings(const TArray<FGSCPicker_SettingSourceN
 
 #pragma region SettingProperties
 
-bool UGSCSubsystem::GetSettingValueAsString(const UGSCData_Setting* Data, FString& OutValue)
+bool UGSCSubsystem::GetSettingValueAsString(UGSCPropertyFormatBase* PropertyFormat, FString& OutValue)
 {
 	OutValue = FString();
 
-	if (!Data)
+	if (!PropertyFormat)
 	{
 		return false;
 	}
 
-	auto Format{ Data->GetFormat<UGSCPropertyFormatBase>() };
-	if (Format)
+	const auto& GetterSource{ PropertyFormat->GetGetterSource() };
+	if (!GetterSource.IsValid())
 	{
 		return false;
 	}
 
-	const auto& GetterSource{ Format->GetGetterSource() };
-	return GetSettingValueAsString(Data, GetterSource, OutValue);
+	auto* SourceObject{ LoadOrGetSettingSourceObject(GetterSource.SettingSourceName) };
+	if (!SourceObject)
+	{
+		UE_LOG(LogGSC, Warning, TEXT("Could not find SourceObject from SettingSourceName(%s) of GetterSource defined in [%s]"),
+			*GetterSource.SettingSourceName.ToString(), *GetNameSafe(PropertyFormat->GetOuter()));
+		return false;
+	}
+
+	FCachedPropertyPath DynamicPath{ GetterSource.FunctionName.ToString() };
+
+	if (!PropertyPathHelpers::GetPropertyValueAsString(SourceObject, DynamicPath, OutValue))
+	{
+		UE_LOG(LogGSC, Warning, TEXT("Failed to get value from [%s::%s]"), *GetNameSafe(SourceObject), *GetterSource.FunctionName.ToString());
+		return false;
+	}
+
+	return true;
 }
 
 bool UGSCSubsystem::GetSettingValueAsString(const UObject* Context, const FGSCPicker_PropertySource& GetterSource, FString& OutValue)
@@ -355,26 +370,14 @@ bool UGSCSubsystem::GetSettingValueAsString(const UObject* Context, const FGSCPi
 	return true;
 }
 
-
-bool UGSCSubsystem::SetSettingValueFromString(const UGSCData_Setting* Data, FString NewValue)
+bool UGSCSubsystem::SetSettingValueFromString(UGSCPropertyFormatBase* PropertyFormat, FString NewValue)
 {
-	if (!Data)
+	if (!PropertyFormat)
 	{
 		return false;
 	}
 
-	auto Format{ Data->GetFormat<UGSCPropertyFormatBase>() };
-	if (Format)
-	{
-		return false;
-	}
-
-	const auto& SetterSource{ Format->GetSetterSource() };
-	return SetSettingValueFromString(Data, SetterSource, NewValue);
-}
-
-bool UGSCSubsystem::SetSettingValueFromString(const UObject* Context, const FGSCPicker_PropertySource& SetterSource, FString NewValue)
-{
+	const auto& SetterSource{ PropertyFormat->GetSetterSource() };
 	if (!SetterSource.IsValid())
 	{
 		return false;
@@ -384,7 +387,7 @@ bool UGSCSubsystem::SetSettingValueFromString(const UObject* Context, const FGSC
 	if (!SourceObject)
 	{
 		UE_LOG(LogGSC, Error, TEXT("Could not find SourceObject from SettingSourceName(%s) of SetterSource defined in [%s]"),
-			*SetterSource.SettingSourceName.ToString(), *GetNameSafe(Context));
+			*SetterSource.SettingSourceName.ToString(), *GetNameSafe(PropertyFormat->GetOuter()));
 		return false;
 	}
 
@@ -397,34 +400,46 @@ bool UGSCSubsystem::SetSettingValueFromString(const UObject* Context, const FGSC
 	}
 
 	MarkDirty(SetterSource.SettingSourceName);
+	PropertyFormat->HandleSettingValueChanged();
 
 	return true;
 }
 
-
-bool UGSCSubsystem::GetSettingDefaultAsString(const UGSCData_Setting* Data, FString& OutValue)
+bool UGSCSubsystem::GetSettingDefaultAsString(UGSCPropertyFormatBase* PropertyFormat, FString& OutValue)
 {
-	OutValue = FString();
-
-	if (!Data)
+	if (!PropertyFormat)
 	{
 		return false;
 	}
 
-	auto Format{ Data->GetFormat<UGSCPropertyFormatBase>() };
-	if (Format)
+	const auto& DefaultSource{ PropertyFormat->GetDefaultSource() };
+	if (!DefaultSource.IsValid())
 	{
 		return false;
 	}
 
-	const auto& DefaultSource{ Format->GetDefaultSource() };
-	return GetSettingDefaultAsString(Data, DefaultSource, OutValue);
+	auto* SourceObject{ LoadOrGetSettingSourceObject(DefaultSource.SettingSourceName) };
+	if (!SourceObject)
+	{
+		UE_LOG(LogGSC, Warning, TEXT("Could not find SourceObject from SettingSourceName(%s) of DefaultSource defined in [%s]"),
+			*DefaultSource.SettingSourceName.ToString(), *GetNameSafe(PropertyFormat->GetOuter()));
+		return false;
+	}
+
+	auto* SourceObjectCDO{ GetMutableDefault<UObject>(SourceObject->GetClass()) };
+	FCachedPropertyPath DynamicPath{ DefaultSource.FunctionName.ToString() };
+
+	if (!PropertyPathHelpers::GetPropertyValueAsString(SourceObjectCDO, DynamicPath, OutValue))
+	{
+		UE_LOG(LogGSC, Warning, TEXT("Failed to get value from [%s::%s]"), *GetNameSafe(SourceObjectCDO), *DefaultSource.FunctionName.ToString());
+		return false;
+	}
+
+	return true;
 }
 
 bool UGSCSubsystem::GetSettingDefaultAsString(const UObject* Context, const FGSCPicker_PropertySource& DefaultSource, FString& OutValue)
 {
-	OutValue = FString();
-
 	if (!DefaultSource.IsValid())
 	{
 		return false;
@@ -450,32 +465,13 @@ bool UGSCSubsystem::GetSettingDefaultAsString(const UObject* Context, const FGSC
 	return true;
 }
 
-
-bool UGSCSubsystem::SetSettingValueToDefault(const UGSCData_Setting* Data)
-{
-	if (!Data)
-	{
-		return false;
-	}
-
-	auto Format{ Data->GetFormat<UGSCPropertyFormatBase>() };
-	if (Format)
-	{
-		return false;
-	}
-
-	const auto& DefaultSource{ Format->GetDefaultSource() };
-	const auto& SetterSource{ Format->GetSetterSource() };
-	return SetSettingValueToDefault(Data, DefaultSource, SetterSource);
-}
-
-bool UGSCSubsystem::SetSettingValueToDefault(const UObject* Context, const FGSCPicker_PropertySource& DefaultSource, const FGSCPicker_PropertySource& SetterSource)
+bool UGSCSubsystem::SetSettingValueToDefault(UGSCPropertyFormatBase* PropertyFormat)
 {
 	FString StringValue{ FString() };
 
-	if (GetSettingDefaultAsString(Context, DefaultSource, StringValue))
+	if (GetSettingDefaultAsString(PropertyFormat, StringValue))
 	{
-		return SetSettingValueFromString(Context, SetterSource, StringValue);
+		return SetSettingValueFromString(PropertyFormat, StringValue);
 	}
 
 	return false;

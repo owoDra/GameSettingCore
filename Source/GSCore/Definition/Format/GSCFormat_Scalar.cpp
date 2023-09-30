@@ -9,7 +9,7 @@
 
 bool UGSCScalarPropertyFormatBase::SetPropertyValue(float NewValue)
 {
-    return SetPropertyValueInternal(GetSetterSource(), FString::SanitizeFloat(NewValue, GetFractionDigits()));
+    return SetPropertyValueInternal(FString::SanitizeFloat(NewValue, GetFractionDigits()));
 }
 
 bool UGSCScalarPropertyFormatBase::GetPropertyValue(float& OutValue)
@@ -17,7 +17,7 @@ bool UGSCScalarPropertyFormatBase::GetPropertyValue(float& OutValue)
     OutValue = 0.0;
 
     FString StringValue;
-    auto bSuccess{ GetPropertyValueInternal(GetGetterSource(), StringValue) };
+    auto bSuccess{ GetPropertyValueInternal(StringValue) };
 
     if (StringValue.IsNumeric())
     {
@@ -36,7 +36,7 @@ bool UGSCScalarPropertyFormatBase::GetPropertyDefault(float& OutValue)
     OutValue = 0.0;
 
     FString StringValue;
-    auto bSuccess{ GetPropertyDefaultInternal(GetDefaultSource(), StringValue) };
+    auto bSuccess{ GetPropertyDefaultInternal(StringValue) };
 
     if (StringValue.IsNumeric())
     {

@@ -12,6 +12,7 @@
 
 class UObject;
 class UGSCData_Setting;
+class UGSCPropertyFormatBase;
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FGSCSettingSourceDirtyChangeDelegate, FName, SettingSourceName, bool, NewState);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FGSCSettingSourceActionDelegate, FName, SettingSourceName);
@@ -42,7 +43,7 @@ protected:
 	UPROPERTY(Transient)
 	TSet<FName> DirtySettingSources;
 
-protected:
+public:
 	//
 	// SettingSource の編集未適応状態が変更されたことを知らせるデリゲート
 	//
@@ -128,7 +129,6 @@ public:
 
 	bool RequestApplySettings(const TArray<FGSCPicker_SettingSourceName>& SettingSourceNames);
 
-public:
 	/**
 	 * 特定の SettingSource に対して 設定リセットリクエストを行う
 	 */
@@ -143,7 +143,6 @@ public:
 
 	bool RequestResetSettings(const TArray<FGSCPicker_SettingSourceName>& SettingSourceNames);
 
-public:
 	/**
 	 * 特定の SettingSource に対して 設定再読み込みリクエストを行う
 	 */
@@ -163,24 +162,19 @@ public:
 	/**
 	 * 指定した設定定義に応じた設定の値を FString 型で返す
 	 */
-	UFUNCTION(BlueprintCallable, Category = "GameSettings|Properties")
-	bool GetSettingValueAsString(const UGSCData_Setting* Data, FString& OutValue);
+	bool GetSettingValueAsString(UGSCPropertyFormatBase* PropertyFormat, FString& OutValue);
 
 	bool GetSettingValueAsString(const UObject* Context, const FGSCPicker_PropertySource& GetterSource, FString& OutValue);
 
 	/**
 	 * 指定した設定定義に応じた設定の値を FString 型で設定する
 	 */
-	UFUNCTION(BlueprintCallable, Category = "GameSettings|Properties")
-	bool SetSettingValueFromString(const UGSCData_Setting* Data, FString NewValue);
-
-	bool SetSettingValueFromString(const UObject* Context, const FGSCPicker_PropertySource& SetterSource, FString NewValue);
+	bool SetSettingValueFromString(UGSCPropertyFormatBase* PropertyFormat, FString NewValue);
 
 	/**
 	 * 指定した設定定義に応じた設定のデフォルト値を FString 型で返す
 	 */
-	UFUNCTION(BlueprintCallable, Category = "GameSettings|Properties")
-	bool GetSettingDefaultAsString(const UGSCData_Setting* Data, FString& OutValue);
+	bool GetSettingDefaultAsString(UGSCPropertyFormatBase* PropertyFormat, FString& OutValue);
 
 	bool GetSettingDefaultAsString(const UObject* Context, const FGSCPicker_PropertySource& DefaultSource, FString& OutValue);
 
@@ -190,9 +184,6 @@ public:
 	 * 注意:
 	 *  内部的に FString 型 を通して設定を変更するため FString への変換が不可能な型の場合は使用できません。
 	 */
-	UFUNCTION(BlueprintCallable, Category = "GameSettings|Properties")
-	bool SetSettingValueToDefault(const UGSCData_Setting* Data);
-
-	bool SetSettingValueToDefault(const UObject* Context, const FGSCPicker_PropertySource& DefaultSource, const FGSCPicker_PropertySource& SetterSource);
+	bool SetSettingValueToDefault(UGSCPropertyFormatBase* PropertyFormat);
 
 };

@@ -19,6 +19,8 @@ public:
 	GENERATED_BODY()
 public:
 
+	friend class UGSCSubsystem;
+
 #if WITH_EDITOR
 	virtual EDataValidationResult IsDataValid(class FDataValidationContext& Context) override;
 #endif // WITH_EDITOR
@@ -88,7 +90,7 @@ protected:
 	 *  この関数では値を FString 型として設定するため派生クラスでそれぞれの型に対応した
 	 *  ラッパーを作成することを推奨します。
 	 */
-	virtual bool SetPropertyValueInternal(const FGSCPicker_PropertySource& SetterSource, FString NewValue);
+	virtual bool SetPropertyValueInternal(FString NewValue);
 
 	/**
 	 * この Format によって定義されたプロパティ設定項目の値を取得する
@@ -97,7 +99,7 @@ protected:
 	 *  この関数では値を FString 型として取得するため派生クラスでそれぞれの型に対応した
 	 *  ラッパーを作成することを推奨します。
 	 */
-	virtual bool GetPropertyValueInternal(const FGSCPicker_PropertySource& GetterSource, FString& OutValue);
+	virtual bool GetPropertyValueInternal(FString& OutValue);
 
 	/**
 	 * この Format によって定義されたプロパティ設定項目のデフォルト値を取得する
@@ -106,7 +108,7 @@ protected:
 	 *  この関数では値を FString 型として取得するため派生クラスでそれぞれの型に対応した
 	 *  ラッパーを作成することを推奨します。
 	 */
-	virtual bool GetPropertyDefaultInternal(const FGSCPicker_PropertySource& DefaultSource, FString& OutValue);
+	virtual bool GetPropertyDefaultInternal(FString& OutValue);
 
 public:
 	/**

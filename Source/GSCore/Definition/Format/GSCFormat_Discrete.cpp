@@ -70,7 +70,7 @@ bool UGSCFormat_DiscreteInt::SetPropertyOption(int32 NewOptionIdx)
 
 	if (ValueArray.IsValidIndex(NewOptionIdx))
 	{
-		return SetPropertyValueInternal(GetSetterSource(), FString::FromInt(ValueArray[NewOptionIdx]));
+		return SetPropertyValueInternal(FString::FromInt(ValueArray[NewOptionIdx]));
 	}
 
 	return false;
@@ -83,7 +83,7 @@ bool UGSCFormat_DiscreteInt::GetPropertyOption(int32& OutOptionIdx)
 	// プロパティの値を取得
 
 	FString StringValue;
-	if (!GetPropertyValueInternal(GetGetterSource(), StringValue))
+	if (!GetPropertyValueInternal(StringValue))
 	{
 		return false;
 	}
@@ -115,7 +115,7 @@ bool UGSCFormat_DiscreteInt::GetPropertyDefaultOption(int32& OutOptionIdx)
 	// プロパティの値を取得
 
 	FString StringValue;
-	if (!GetPropertyDefaultInternal(GetDefaultSource(), StringValue))
+	if (!GetPropertyDefaultInternal(StringValue))
 	{
 		return false;
 	}
@@ -229,7 +229,7 @@ bool UGSCFormat_DiscreteFloat::SetPropertyOption(int32 NewOptionIdx)
 
 	if (ValueArray.IsValidIndex(NewOptionIdx))
 	{
-		return SetPropertyValueInternal(GetSetterSource(), FString::SanitizeFloat(ValueArray[NewOptionIdx]));
+		return SetPropertyValueInternal(FString::SanitizeFloat(ValueArray[NewOptionIdx]));
 	}
 
 	return false;
@@ -242,7 +242,7 @@ bool UGSCFormat_DiscreteFloat::GetPropertyOption(int32& OutOptionIdx)
 	// プロパティの値を取得
 
 	FString StringValue;
-	if (!GetPropertyValueInternal(GetGetterSource(), StringValue))
+	if (!GetPropertyValueInternal(StringValue))
 	{
 		return false;
 	}
@@ -274,7 +274,7 @@ bool UGSCFormat_DiscreteFloat::GetPropertyDefaultOption(int32& OutOptionIdx)
 	// プロパティの値を取得
 
 	FString StringValue;
-	if (!GetPropertyDefaultInternal(GetDefaultSource(), StringValue))
+	if (!GetPropertyDefaultInternal(StringValue))
 	{
 		return false;
 	}
@@ -388,7 +388,7 @@ bool UGSCFormat_DiscreteString::SetPropertyOption(int32 NewOptionIdx)
 
 	if (ValueArray.IsValidIndex(NewOptionIdx))
 	{
-		return SetPropertyValueInternal(GetSetterSource(), ValueArray[NewOptionIdx]);
+		return SetPropertyValueInternal(ValueArray[NewOptionIdx]);
 	}
 
 	return false;
@@ -401,7 +401,7 @@ bool UGSCFormat_DiscreteString::GetPropertyOption(int32& OutOptionIdx)
 	// プロパティの値を取得
 
 	FString StringValue;
-	if (!GetPropertyValueInternal(GetGetterSource(), StringValue))
+	if (!GetPropertyValueInternal(StringValue))
 	{
 		return false;
 	}
@@ -426,7 +426,7 @@ bool UGSCFormat_DiscreteString::GetPropertyDefaultOption(int32& OutOptionIdx)
 	// プロパティの値を取得
 
 	FString StringValue;
-	if (!GetPropertyDefaultInternal(GetDefaultSource(), StringValue))
+	if (!GetPropertyDefaultInternal(StringValue))
 	{
 		return false;
 	}

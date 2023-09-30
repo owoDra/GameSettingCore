@@ -68,39 +68,35 @@ void UGSCPropertyFormatBase::HandleSettingValueChanged()
 }
 
 
-bool UGSCPropertyFormatBase::SetPropertyValueInternal(const FGSCPicker_PropertySource& SetterSource, FString NewValue)
+bool UGSCPropertyFormatBase::SetPropertyValueInternal(FString NewValue)
 {
 	if (auto* Subsystem{ UGSCSubsystem::Get() })
 	{
-		if (Subsystem->SetSettingValueFromString(GetOuter(), SetterSource, NewValue))
-		{
-			HandleSettingValueChanged();
-			return true;
-		}
+		return Subsystem->SetSettingValueFromString(this, NewValue);
 	}
 
 	return false;
 }
 
-bool UGSCPropertyFormatBase::GetPropertyValueInternal(const FGSCPicker_PropertySource& GetterSource, FString& OutValue)
+bool UGSCPropertyFormatBase::GetPropertyValueInternal(FString& OutValue)
 {
 	OutValue = FString();
 
 	if (auto* Subsystem{ UGSCSubsystem::Get() })
 	{
-		return Subsystem->GetSettingValueAsString(GetOuter(), GetterSource, OutValue);
+		return Subsystem->GetSettingValueAsString(this, OutValue);
 	}
 
 	return false;
 }
 
-bool UGSCPropertyFormatBase::GetPropertyDefaultInternal(const FGSCPicker_PropertySource& DefaultSource, FString& OutValue)
+bool UGSCPropertyFormatBase::GetPropertyDefaultInternal(FString& OutValue)
 {
 	OutValue = FString();
 
 	if (auto* Subsystem{ UGSCSubsystem::Get() })
 	{
-		return Subsystem->GetSettingDefaultAsString(GetOuter(), DefaultSource, OutValue);
+		return Subsystem->GetSettingDefaultAsString(this, OutValue);
 	}
 
 	return false;
@@ -110,7 +106,7 @@ bool UGSCPropertyFormatBase::SetPropertyToDefault()
 {
 	if (auto* Subsystem{ UGSCSubsystem::Get() })
 	{
-		return Subsystem->SetSettingValueToDefault(GetOuter(), GetDefaultSource(), GetSetterSource());
+		return Subsystem->SetSettingValueToDefault(this);
 	}
 
 	return false;
