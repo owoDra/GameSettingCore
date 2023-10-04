@@ -3,7 +3,7 @@
 #include "GSCPropertyFormatBase.h"
 
 #include "Subsystem/GSCSubsystem.h"
-#include "Definition/GSCData_Setting.h"
+#include "Data/GSCData_Setting.h"
 #include "Development/GSCLogChannels.h"
 
 #include "PropertyPathHelpers.h"

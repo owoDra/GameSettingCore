@@ -67,7 +67,7 @@ const FGSCPicker_PropertySource& UGSCFormat_ScalarFloat::GetSetterSource() const
 
 const FGSCPicker_PropertySource& UGSCFormat_ScalarFloat::GetDefaultSource() const
 {
-    return DefaultSource;
+    return GetterSource;
 }
 
 
@@ -104,7 +104,7 @@ const FGSCPicker_PropertySource& UGSCFormat_ScalarInt::GetSetterSource() const
 
 const FGSCPicker_PropertySource& UGSCFormat_ScalarInt::GetDefaultSource() const
 {
-    return DefaultSource;
+    return GetterSource;
 }
 
 

@@ -2,7 +2,7 @@
 
 #pragma once
 
-#include "Definition/Format/GSCPropertyFormatBase.h"
+#include "Data/Format/GSCPropertyFormatBase.h"
 
 #include "GSCFormat_Scalar.generated.h"
 
@@ -106,16 +106,6 @@ protected:
 		SetterFuncTemplate = "/Script/GSCore.GSCPickerTemplate_FormatScalar::FloatSetterTemplate__DelegateSignature"))
 	FGSCPicker_PropertySource SetterSource{ FGSCPicker_PropertySource::Empty };
 
-	//
-	// 設定のデフォルト値の Getter 関数名
-	// 
-	// Tips:
-	//  基本的には GetterSource と同じもの
-	//
-	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = "DataSource", meta = (
-		GetterFuncTemplate = "/Script/GSCore.GSCPickerTemplate_FormatScalar::FloatGetterTemplate__DelegateSignature"))
-	FGSCPicker_PropertySource DefaultSource{ FGSCPicker_PropertySource::Empty };
-
 protected:
 	//
 	// 設定値の編集可能な最大値
@@ -175,16 +165,6 @@ protected:
 	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = "DataSource", meta = (
 		SetterFuncTemplate = "/Script/GSCore.GSCPickerTemplate_FormatScalar::IntSetterTemplate__DelegateSignature"))
 	FGSCPicker_PropertySource SetterSource{ FGSCPicker_PropertySource::Empty };
-
-	//
-	// 設定のデフォルト値の Getter 関数名
-	// 
-	// Tips:
-	//  基本的には GetterSource と同じもの
-	//
-	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = "DataSource", meta = (
-		GetterFuncTemplate = "/Script/GSCore.GSCPickerTemplate_FormatScalar::IntGetterTemplate__DelegateSignature"))
-	FGSCPicker_PropertySource DefaultSource{ FGSCPicker_PropertySource::Empty };
 
 protected:
 	//

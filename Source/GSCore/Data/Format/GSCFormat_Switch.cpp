@@ -65,7 +65,7 @@ const FGSCPicker_PropertySource& UGSCFormat_SwitchBool::GetSetterSource() const
 
 const FGSCPicker_PropertySource& UGSCFormat_SwitchBool::GetDefaultSource() const
 {
-    return DefaultSource;
+    return GetterSource;
 }
 
 #pragma endregion

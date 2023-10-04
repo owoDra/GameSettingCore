@@ -2,9 +2,9 @@
 
 #pragma once
 
-#include "Definition/EditCondition/GSCEditConditionBase.h"
+#include "Data/EditCondition/GSCEditConditionBase.h"
 
-#include "Definition/Picker/GSCPicker_PropertySource.h"
+#include "Data/Picker/GSCPicker_PropertySource.h"
 
 #include "GSCEditCondition_DataSource.generated.h"
 

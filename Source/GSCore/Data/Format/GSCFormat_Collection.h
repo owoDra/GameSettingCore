@@ -2,7 +2,7 @@
 
 #pragma once
 
-#include "Definition/Format/GSCFormatBase.h"
+#include "Data/Format/GSCFormatBase.h"
 
 #include "GSCFormat_Collection.generated.h"
 

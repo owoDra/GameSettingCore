@@ -4,9 +4,9 @@
 
 #include "Subsystems/EngineSubsystem.h"
 
-#include "Definition/Picker/GSCPicker_SettingSource.h"
-#include "Definition/Picker/GSCPicker_PropertySource.h"
-#include "Definition/Picker/GSCPicker_SettingSourceName.h"
+#include "Data/Picker/GSCPicker_SettingSource.h"
+#include "Data/Picker/GSCPicker_PropertySource.h"
+#include "Data/Picker/GSCPicker_SettingSourceName.h"
 
 #include "GSCSubsystem.generated.h"
 

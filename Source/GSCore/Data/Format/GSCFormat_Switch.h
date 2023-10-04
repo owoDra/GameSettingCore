@@ -2,7 +2,7 @@
 
 #pragma once
 
-#include "Definition/Format/GSCPropertyFormatBase.h"
+#include "Data/Format/GSCPropertyFormatBase.h"
 
 #include "GSCFormat_Switch.generated.h"
 
@@ -99,25 +99,15 @@ protected:
 	// 設定の値の Getter 関数名
 	//
 	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = "DataSource", meta = (
-		GetterFuncTemplate = "/Script/GSCore.GSCPickerTemplate_FormatSwitch::GetterTemplate__DelegateSignature"))
+		GetterFuncTemplate = "/Script/GSCore.GSCPickerTemplate_FormatSwitch::BoolGetterTemplate__DelegateSignature"))
 	FGSCPicker_PropertySource GetterSource{ FGSCPicker_PropertySource::Empty };
 
 	//
 	// 設定の値の Setter 関数名
 	//
 	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = "DataSource", meta = (
-		SetterFuncTemplate = "/Script/GSCore.GSCPickerTemplate_FormatSwitch::SetterTemplate__DelegateSignature"))
+		SetterFuncTemplate = "/Script/GSCore.GSCPickerTemplate_FormatSwitch::BoolSetterTemplate__DelegateSignature"))
 	FGSCPicker_PropertySource SetterSource{ FGSCPicker_PropertySource::Empty };
-
-	//
-	// 設定のデフォルト値の Getter 関数名
-	// 
-	// Tips:
-	//  基本的には GetterSource と同じもの
-	//
-	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = "DataSource", meta = (
-		GetterFuncTemplate = "/Script/GSCore.GSCPickerTemplate_FormatSwitch::GetterTemplate__DelegateSignature"))
-	FGSCPicker_PropertySource DefaultSource{ FGSCPicker_PropertySource::Empty };
 
 public:
 	virtual const FGSCPicker_PropertySource& GetGetterSource() const override;

@@ -4,7 +4,7 @@
 
 #include "Engine/DeveloperSettings.h"
 
-#include "Definition/Picker/GSCPicker_SettingSource.h"
+#include "Data/Picker/GSCPicker_SettingSource.h"
 
 #include "GSCDeveloperSettings.generated.h"
 

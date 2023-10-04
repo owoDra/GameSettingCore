@@ -4,7 +4,7 @@
 
 #include "Engine/DataAsset.h"
 
-#include "Definition/EditCondition/GSCEditableState.h"
+#include "Data/EditCondition/GSCEditableState.h"
 
 #include "GSCData_Setting.generated.h"
 

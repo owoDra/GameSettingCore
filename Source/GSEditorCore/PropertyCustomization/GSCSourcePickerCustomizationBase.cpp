@@ -1,4 +1,4 @@
-// Copyright (C) 2023 owoDra
+ï»¿// Copyright (C) 2023 owoDra
 
 #include "GSCSourcePickerCustomizationBase.h"
 
@@ -25,14 +25,14 @@ void FGSCSourcePickerCustomizationBase::CustomizeHeader(TSharedRef<IPropertyHand
 
 void FGSCSourcePickerCustomizationBase::CustomizeChildren(TSharedRef<IPropertyHandle> PropertyHandle, IDetailChildrenBuilder& ChildBuilder, IPropertyTypeCustomizationUtils& CustomizationUtils)
 {
-	// •Ï”•ÏX‚ÌƒR[ƒ‹ƒoƒbƒN‚ğİ’è
+	// å¤‰æ•°å¤‰æ›´æ™‚ã®ã‚³ãƒ¼ãƒ«ãƒãƒƒã‚¯ã‚’è¨­å®š
 
 	ParentPropertyHandle = PropertyHandle;
 	auto RefreshSuggestListDelegate{ FSimpleDelegate::CreateSP(this, &ThisClass::HandlePropertyChange) };
 	PropertyHandle->SetOnPropertyValueChanged(RefreshSuggestListDelegate);
 	PropertyHandle->SetOnChildPropertyValueChanged(RefreshSuggestListDelegate);
 
-	// •Ï” SourceClass ‚É‚Â‚¢‚Ä‚Ì€–Ú‚ğ’Ç‰Á
+	// å¤‰æ•° SourceClass ã«ã¤ã„ã¦ã®é …ç›®ã‚’è¿½åŠ 
 
 	SourceClassPropertyHandle = PropertyHandle->GetChildHandle(GetSourceClassPropertyName());
 	if (SourceClassPropertyHandle.IsValid())
@@ -40,7 +40,7 @@ void FGSCSourcePickerCustomizationBase::CustomizeChildren(TSharedRef<IPropertyHa
 		CustomizeSourceClassProperty(ChildBuilder, CustomizationUtils);
 	}
 
-	// •Ï” FunctionName ‚É‚Â‚¢‚Ä‚Ì€–Ú‚ğ’Ç‰Á
+	// å¤‰æ•° FunctionName ã«ã¤ã„ã¦ã®é …ç›®ã‚’è¿½åŠ 
 	
 	FunctionNamePropertyHandle = PropertyHandle->GetChildHandle(GetFunctionNamePropertyName());
 	if (SourceClassPropertyHandle.IsValid())
@@ -60,13 +60,13 @@ void FGSCSourcePickerCustomizationBase::CustomizeSourceClassProperty(IDetailChil
 
 void FGSCSourcePickerCustomizationBase::CustomizeFunctionNameProperty(IDetailChildrenBuilder& ChildBuilder, IPropertyTypeCustomizationUtils& CustomizationUtils)
 {
-	// CombBox ‚Ìƒf[ƒ^‚ğ‰Šú‰»‚·‚é
+	// CombBox ã®ãƒ‡ãƒ¼ã‚¿ã‚’åˆæœŸåŒ–ã™ã‚‹
 
 	InitSuggestList();
 
 	RefreshSuggestList();
 
-	// ‘I‘ğ’†‚ÌŠÖ”–¼‚É‚Â‚¢‚Ä‚ÌƒEƒBƒWƒFƒbƒg‚ğ\’z
+	// é¸æŠä¸­ã®é–¢æ•°åã«ã¤ã„ã¦ã®ã‚¦ã‚£ã‚¸ã‚§ãƒƒãƒˆã‚’æ§‹ç¯‰
 
 	FText TextRowText;
 	FunctionNamePropertyHandle->GetValueAsDisplayText(TextRowText);
@@ -79,7 +79,7 @@ void FGSCSourcePickerCustomizationBase::CustomizeFunctionNameProperty(IDetailChi
 
 	RowTextWidget = TextRowWidgetRef;
 
-	// Œó•âƒŠƒXƒg‚É‚Â‚¢‚Ä‚ÌƒEƒBƒWƒFƒbƒg‚ğ\’z
+	// å€™è£œãƒªã‚¹ãƒˆã«ã¤ã„ã¦ã®ã‚¦ã‚£ã‚¸ã‚§ãƒƒãƒˆã‚’æ§‹ç¯‰
 
 	const auto SearchableComboBoxRef
 	{
@@ -103,7 +103,7 @@ void FGSCSourcePickerCustomizationBase::CustomizeFunctionNameProperty(IDetailChi
 
 	SuggestListWidget = SearchableComboBoxRef;
 
-	// ŠÖ”–¼‚Ì•ÒW‰ÓŠ‚ÉŠÖ‚·‚éƒEƒBƒWƒFƒbƒg‚ğ\’z‚·‚é
+	// é–¢æ•°åã®ç·¨é›†ç®‡æ‰€ã«é–¢ã™ã‚‹ã‚¦ã‚£ã‚¸ã‚§ãƒƒãƒˆã‚’æ§‹ç¯‰ã™ã‚‹
 
 	ChildBuilder
 		.AddCustomRow(FunctionNamePropertyHandle->GetPropertyDisplayName())
@@ -181,7 +181,7 @@ void FGSCSourcePickerCustomizationBase::RefreshSuggestList()
 		return;
 	}
 
-	// SourceClass ‚ª‘I‘ğ‚³‚ê‚Ä‚¢‚È‚¢ê‡‚ÍŒó•âƒŠƒXƒg‚ğ–³Œø‰»
+	// SourceClass ãŒé¸æŠã•ã‚Œã¦ã„ãªã„å ´åˆã¯å€™è£œãƒªã‚¹ãƒˆã‚’ç„¡åŠ¹åŒ–
 
 	FString SelectedSourceClassName;
 	SourceClassPropertyHandle->GetValueAsDisplayString(SelectedSourceClassName);
@@ -191,7 +191,7 @@ void FGSCSourcePickerCustomizationBase::RefreshSuggestList()
 		return;
 	}
 
-	// €–Ú‚É•ÏX‚ª‚È‚¢ê‡‚ÍXV‚ğƒXƒLƒbƒv‚·‚é
+	// é …ç›®ã«å¤‰æ›´ãŒãªã„å ´åˆã¯æ›´æ–°ã‚’ã‚¹ã‚­ãƒƒãƒ—ã™ã‚‹
 
 	const auto bHasClassChanged{ SelectedSourceClassName != PrevSelectedSourceCalssName };
 	PrevSelectedSourceCalssName = SelectedSourceClassName;
@@ -202,7 +202,7 @@ void FGSCSourcePickerCustomizationBase::RefreshSuggestList()
 		return;
 	}
 
-	// ‘I‘ğ‚µ‚½ƒNƒ‰ƒX‚ª–³Œø‚¾‚Á‚½ê‡‚Í–³Œø‰»‚·‚é
+	// é¸æŠã—ãŸã‚¯ãƒ©ã‚¹ãŒç„¡åŠ¹ã ã£ãŸå ´åˆã¯ç„¡åŠ¹åŒ–ã™ã‚‹
 
 	const auto* SelectedSourceClass{ GetSelectedSourceClass() };
 	if (!SelectedSourceClass)
@@ -211,7 +211,7 @@ void FGSCSourcePickerCustomizationBase::RefreshSuggestList()
 		return;
 	}
 
-	// Œó•âƒŠƒXƒg‚ğ—LŒø‰»‚µAŒó•â‚ğŒŸõ‚·‚é
+	// å€™è£œãƒªã‚¹ãƒˆã‚’æœ‰åŠ¹åŒ–ã—ã€å€™è£œã‚’æ¤œç´¢ã™ã‚‹
 
 	ResetSuggestList();
 
@@ -220,7 +220,7 @@ void FGSCSourcePickerCustomizationBase::RefreshSuggestList()
 
 	TArray<FName> FoundList;
 	auto bFoundSpecifiedFunction{ false };
-	for (TFieldIterator<UFunction> It{ SelectedSourceClass, EFieldIteratorFlags::ExcludeSuper }; It; ++It)
+	for (TFieldIterator<UFunction> It{ SelectedSourceClass, EFieldIteratorFlags::IncludeSuper }; It; ++It)
 	{
 		const auto* FunctionIt{ *It };
 		if (FunctionIt && FunctionIt != TemplateFunctionWeakPtr &&
@@ -236,14 +236,14 @@ void FGSCSourcePickerCustomizationBase::RefreshSuggestList()
 		}
 	}
 
-	// Šù‚É‘I‘ğ’†‚ÌŠÖ”–¼‚ª‚È‚¢ê‡‚Í None ‚Éİ’è
+	// æ—¢ã«é¸æŠä¸­ã®é–¢æ•°åãŒãªã„å ´åˆã¯ None ã«è¨­å®š
 
 	if (!bFoundSpecifiedFunction)
 	{
 		SetFunctionNameValue(NAME_None);
 	}
 
-	// Œó•âƒŠƒXƒg‚ğXV‚·‚é
+	// å€™è£œãƒªã‚¹ãƒˆã‚’æ›´æ–°ã™ã‚‹
 
 	for (const auto& Each : FoundList)
 	{
@@ -266,7 +266,7 @@ void FGSCSourcePickerCustomizationBase::RefreshSuggestList()
 		SuggestListOptions.Emplace(MakeShareable(new FString(StringName)));
 	}
 
-	// CombBox ‚ğXV‚·‚é
+	// CombBox ã‚’æ›´æ–°ã™ã‚‹
 
 	if (const auto& SearchableComboBox{ SuggestListWidget.Pin() })
 	{
@@ -304,7 +304,7 @@ const UClass* FGSCSourcePickerCustomizationBase::GetSelectedSourceClass() const
 
 bool FGSCSourcePickerCustomizationBase::IsSignatureCompatible(const UFunction* Function) const
 {
-	// ŒŸØ‚·‚éŠÖ”‚ÆŒŸØ‚É—p‚¢‚éŠÖ”‚ª—LŒø‚©Šm”F‚·‚é
+	// æ¤œè¨¼ã™ã‚‹é–¢æ•°ã¨æ¤œè¨¼ã«ç”¨ã„ã‚‹é–¢æ•°ãŒæœ‰åŠ¹ã‹ç¢ºèªã™ã‚‹
 
 	if (!Function)
 	{
@@ -314,12 +314,12 @@ bool FGSCSourcePickerCustomizationBase::IsSignatureCompatible(const UFunction* F
 	const auto* TemplateFunction{ TemplateFunctionWeakPtr.Get() };
 	if (!TemplateFunction)
 	{
-		// ŒŸØ—p‚ÌŠÖ”‚ªİ’è‚³‚ê‚Ä‚¢‚È‚¢ê‡‚Í–³ğŒ‚Å true ‚ğ•Ô‚·
+		// æ¤œè¨¼ç”¨ã®é–¢æ•°ãŒè¨­å®šã•ã‚Œã¦ã„ãªã„å ´åˆã¯ç„¡æ¡ä»¶ã§ true ã‚’è¿”ã™
 
 		return true;
 	}
 
-	// ƒvƒƒpƒeƒB‚ª“¯‚¶ƒ^ƒCƒv‚©ŒŸØ—p‚Ìƒ‰ƒ€ƒ_ŠÖ”‚ğì¬
+	// ãƒ—ãƒ­ãƒ‘ãƒ†ã‚£ãŒåŒã˜ã‚¿ã‚¤ãƒ—ã‹æ¤œè¨¼ç”¨ã®ãƒ©ãƒ ãƒ€é–¢æ•°ã‚’ä½œæˆ
 
 	auto ArePropertiesTheSame
 	{ 
@@ -358,7 +358,7 @@ bool FGSCSourcePickerCustomizationBase::IsSignatureCompatible(const UFunction* F
 		} 
 	};
 
-	// —¼ŠÖ”‚ÌƒvƒƒpƒeƒB‚ğ”äŠr‚µ‚Ä–¼‚ª“™‚µ‚¢‚©ŒŸØ‚·‚é
+	// ä¸¡é–¢æ•°ã®ãƒ—ãƒ­ãƒ‘ãƒ†ã‚£ã‚’æ¯”è¼ƒã—ã¦ç½²åãŒç­‰ã—ã„ã‹æ¤œè¨¼ã™ã‚‹
 
 	const uint64 IgnoreFlags{ CPF_ReturnParm | UFunction::GetDefaultIgnoredSignatureCompatibilityFlags() };
 
@@ -379,7 +379,7 @@ bool FGSCSourcePickerCustomizationBase::IsSignatureCompatible(const UFunction* F
 			}
 		}
 
-		// —¼ŠÖ”‚ÌƒvƒƒpƒeƒB”‚ª•sˆê’v‚¾‚Á‚½ê‡‚Í false ‚ğ•Ô‚·
+		// ä¸¡é–¢æ•°ã®ãƒ—ãƒ­ãƒ‘ãƒ†ã‚£æ•°ãŒä¸ä¸€è‡´ã ã£ãŸå ´åˆã¯ false ã‚’è¿”ã™
 
 		else
 		{

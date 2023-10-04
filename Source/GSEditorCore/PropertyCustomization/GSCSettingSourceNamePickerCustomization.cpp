@@ -2,7 +2,7 @@
 
 #include "GSCSettingSourceNamePickerCustomization.h"
 
-#include "Definition/Picker/GSCPicker_SettingSourceName.h"
+#include "Data/Picker/GSCPicker_SettingSourceName.h"
 #include "Development/GSCDeveloperSettings.h"
 #include "Development/GSCEditorLogChannels.h"
 

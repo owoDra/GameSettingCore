@@ -5,8 +5,8 @@
 #include "Development/GSCDeveloperSettings.h"
 #include "Development/GSCLogChannels.h"
 #include "Subsystem/GSCSettingSourceInterface.h"
-#include "Definition/GSCData_Setting.h"
-#include "Definition/Format/GSCPropertyFormatBase.h"
+#include "Data/GSCData_Setting.h"
+#include "Data/Format/GSCPropertyFormatBase.h"
 
 #include "PropertyPathHelpers.h"
 
@@ -395,7 +395,7 @@ bool UGSCSubsystem::SetSettingValueFromString(UGSCPropertyFormatBase* PropertyFo
 
 	if (!PropertyPathHelpers::SetPropertyValueFromString(SourceObject, DynamicPath, NewValue))
 	{
-		UE_LOG(LogGSC, Error, TEXT("Failed to get value from [%s::%s]"), *GetNameSafe(SourceObject), *SetterSource.FunctionName.ToString());
+		UE_LOG(LogGSC, Error, TEXT("Failed to set value from [%s::%s]"), *GetNameSafe(SourceObject), *SetterSource.FunctionName.ToString());
 		return false;
 	}
 

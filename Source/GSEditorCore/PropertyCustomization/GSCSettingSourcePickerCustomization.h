@@ -1,4 +1,4 @@
-// Copyright (C) 2023 owoDra
+ï»¿// Copyright (C) 2023 owoDra
 
 #pragma once
 
@@ -8,8 +8,8 @@ class FPropertyEditorModule;
 
 
 /**
- * FGSCPicker_SettingSource Œ^‚ÌƒvƒƒpƒeƒB‚ğ•ÒW‚·‚éÛ‚É‘I‘ğ‚µ‚½ SourceClass ‚É‰‚¶‚Ä
- * ©“®“I‚Ég—p‰Â”\‚ÈŠÖ”–¼‚ÌŒó•â‚ª‘I‘ğ‚³‚ê‚é‚æ‚¤‚É‚·‚é‚½‚ß‚ÌƒNƒ‰ƒX
+ * FGSCPicker_SettingSource å‹ã®ãƒ—ãƒ­ãƒ‘ãƒ†ã‚£ã‚’ç·¨é›†ã™ã‚‹éš›ã«é¸æŠã—ãŸ SourceClass ã«å¿œã˜ã¦
+ * è‡ªå‹•çš„ã«ä½¿ç”¨å¯èƒ½ãªé–¢æ•°åã®å€™è£œãŒé¸æŠã•ã‚Œã‚‹ã‚ˆã†ã«ã™ã‚‹ãŸã‚ã®ã‚¯ãƒ©ã‚¹
  */
 class FGSCSettingSourcePickerCustomization : public FGSCSourcePickerCustomizationBase
 {
@@ -21,17 +21,17 @@ private:
 
 public:
 	/**
-	 * ‚±‚ÌƒNƒ‰ƒX‚ÌƒCƒ“ƒXƒ^ƒ“ƒX‚ğì¬‚·‚é
+	 * ã“ã®ã‚¯ãƒ©ã‚¹ã®ã‚¤ãƒ³ã‚¹ã‚¿ãƒ³ã‚¹ã‚’ä½œæˆã™ã‚‹
 	 */
 	static TSharedRef<IPropertyTypeCustomization> MakeInstance();
 
 	/**
-	 * ‚±‚ÌƒNƒ‰ƒX‚ğƒ‚ƒWƒ…[ƒ‹‚É“o˜^‚·‚é
+	 * ã“ã®ã‚¯ãƒ©ã‚¹ã‚’ãƒ¢ã‚¸ãƒ¥ãƒ¼ãƒ«ã«ç™»éŒ²ã™ã‚‹
 	 */
 	static void RegisterToPropertyEditorModule(FPropertyEditorModule& PropertyModule);
 
 	/**
-	 * ‚±‚ÌƒNƒ‰ƒX‚ğƒ‚ƒWƒ…[ƒ‹‚©‚ç“o˜^‰ğœ‚·‚é
+	 * ã“ã®ã‚¯ãƒ©ã‚¹ã‚’ãƒ¢ã‚¸ãƒ¥ãƒ¼ãƒ«ã‹ã‚‰ç™»éŒ²è§£é™¤ã™ã‚‹
 	 */
 	static void UnregisterToPropertyEditorModule(FPropertyEditorModule& PropertyModule);
 

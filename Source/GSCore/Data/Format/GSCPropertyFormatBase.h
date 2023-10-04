@@ -2,9 +2,9 @@
 
 #pragma once
 
-#include "Definition/Format/GSCFormatBase.h"
+#include "Data/Format/GSCFormatBase.h"
 
-#include "Definition/Picker/GSCPicker_PropertySource.h"
+#include "Data/Picker/GSCPicker_PropertySource.h"
 
 #include "GSCPropertyFormatBase.generated.h"
 

@@ -3,8 +3,8 @@
 #include "GSCPropertySourcePickerCustomization.h"
 
 #include "Development/GSCDeveloperSettings.h"
-#include "Definition/Picker/GSCPicker_SettingSource.h"
-#include "Definition/Picker/GSCPicker_PropertySource.h"
+#include "Data/Picker/GSCPicker_SettingSource.h"
+#include "Data/Picker/GSCPicker_PropertySource.h"
 #include "Development/GSCEditorLogChannels.h"
 
 #include "DetailLayoutBuilder.h"

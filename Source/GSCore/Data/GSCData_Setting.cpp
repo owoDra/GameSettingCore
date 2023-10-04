@@ -2,8 +2,8 @@
 
 #include "GSCData_Setting.h"
 
-#include "Definition/Format/GSCFormatBase.h"
-#include "Definition/EditCondition/GSCEditConditionBase.h"
+#include "Data/Format/GSCFormatBase.h"
+#include "Data/EditCondition/GSCEditConditionBase.h"
 
 #if WITH_EDITOR
 

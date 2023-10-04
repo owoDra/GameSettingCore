@@ -2,7 +2,7 @@
 
 #pragma once
 
-#include "Definition/Filter/GSCFilterBase.h"
+#include "Data/Filter/GSCFilterBase.h"
 
 #include "Misc/TextFilterExpressionEvaluator.h"
 

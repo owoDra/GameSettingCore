@@ -1,11 +1,14 @@
-// Copyright (C) 2023 owoDra
+﻿// Copyright (C) 2023 owoDra
 
 #include "GSCSettingSourcePickerCustomization.h"
 
-#include "Definition/Picker/GSCPicker_SettingSource.h"
+#include "Data/Picker/GSCPicker_SettingSource.h"
 #include "Development/GSCEditorLogChannels.h"
 
 #include "Modules/ModuleManager.h"
+#include "DetailLayoutBuilder.h"
+#include "DetailWidgetRow.h"
+#include "IDetailChildrenBuilder.h"
 
 
 const FName FGSCSettingSourcePickerCustomization::NAME_SettingSourcePickerProperty = FGSCPicker_SettingSource::StaticStruct()->GetFName();

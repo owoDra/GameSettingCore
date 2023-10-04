@@ -47,13 +47,13 @@ public:
 
 public:
 	//
-	// パラメータにアクセス可能なクラス
+	// ソースにアクセス可能なクラス
 	//
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, meta = (MustImplement = "GSCSettingSourceInterface"))
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
 	FSoftClassPath SourceClass;
 
 	//
-	// SourceClass のオブジェクトからアクセスする関数の名前
+	//ソースにアクセス可能な SourceClass に存在する関数の名前
 	//
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
 	FName FunctionName{ NAME_None };

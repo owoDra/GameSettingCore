@@ -2,8 +2,8 @@
 
 #include "GSCFilterBase.h"
 
-#include "Definition/GSCData_Setting.h"
-#include "Definition/Format/GSCFormat_Collection.h"
+#include "Data/GSCData_Setting.h"
+#include "Data/Format/GSCFormat_Collection.h"
 
 #include UE_INLINE_GENERATED_CPP_BY_NAME(GSCFilterBase)
 

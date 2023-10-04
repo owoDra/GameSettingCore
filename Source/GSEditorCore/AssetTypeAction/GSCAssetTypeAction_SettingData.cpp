@@ -3,8 +3,8 @@
 #include "GSCAssetTypeAction_SettingData.h"
 
 #include "GSEditorCore.h"
-#include "Definition/GSCData_Setting.h"
-#include "Definition/Format/GSCFormatBase.h"
+#include "Data/GSCData_Setting.h"
+#include "Data/Format/GSCFormatBase.h"
 
 #include "Modules/ModuleManager.h"
 #include "ClassViewerModule.h"

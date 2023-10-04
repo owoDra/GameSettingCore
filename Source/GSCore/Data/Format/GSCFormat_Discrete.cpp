@@ -51,7 +51,7 @@ const FGSCPicker_PropertySource& UGSCFormat_DiscreteInt::GetSetterSource() const
 
 const FGSCPicker_PropertySource& UGSCFormat_DiscreteInt::GetDefaultSource() const
 {
-	return DefaultSource;
+	return GetterSource;
 }
 
 const FGSCPicker_PropertySource& UGSCFormat_DiscreteInt::GetDynamicOptionSource() const
@@ -210,7 +210,7 @@ const FGSCPicker_PropertySource& UGSCFormat_DiscreteFloat::GetSetterSource() con
 
 const FGSCPicker_PropertySource& UGSCFormat_DiscreteFloat::GetDefaultSource() const
 {
-	return DefaultSource;
+	return GetterSource;
 }
 
 const FGSCPicker_PropertySource& UGSCFormat_DiscreteFloat::GetDynamicOptionSource() const
@@ -369,7 +369,7 @@ const FGSCPicker_PropertySource& UGSCFormat_DiscreteString::GetSetterSource() co
 
 const FGSCPicker_PropertySource& UGSCFormat_DiscreteString::GetDefaultSource() const
 {
-	return DefaultSource;
+	return GetterSource;
 }
 
 const FGSCPicker_PropertySource& UGSCFormat_DiscreteString::GetDynamicOptionSource() const
