@@ -4,4 +4,4 @@
 
 #include "Logging/LogMacros.h"
 
-DECLARE_LOG_CATEGORY_EXTERN(LogGSCEditor, Log, All);
+GSCORE_API DECLARE_LOG_CATEGORY_EXTERN(LogGSC, Log, All);
