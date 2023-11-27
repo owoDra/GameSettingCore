@@ -2,11 +2,6 @@
 
 #include "GSEditorCore.h"
 
-#include "PropertyCustomization/GSCSettingSourcePickerCustomization.h"
-#include "PropertyCustomization/GSCPropertySourcePickerCustomization.h"
-#include "PropertyCustomization/GSCSettingSourceNamePickerCustomization.h"
-#include "AssetTypeAction/GSCAssetTypeAction_SettingData.h"
-
 IMPLEMENT_MODULE(FGSEditorCoreModule, GSEditorCore)
 
 
@@ -34,11 +29,6 @@ void FGSEditorCoreModule::RegisterPropertyCustomizations()
 
 	auto& PropertyModule{ FModuleManager::LoadModuleChecked<FPropertyEditorModule>(NAME_PropertyEditorModule) };
 
-	FGSCSettingSourcePickerCustomization::RegisterToPropertyEditorModule(PropertyModule);
-	FGSCPropertySourcePickerCustomization::RegisterToPropertyEditorModule(PropertyModule);
-	FGSCSettingSourceNamePickerCustomization::RegisterToPropertyEditorModule(PropertyModule);
-
-
 	PropertyModule.NotifyCustomizationModuleChanged();
 }
 
@@ -50,10 +40,6 @@ void FGSEditorCoreModule::UnregisterPropertyCustomizations()
 	}
 
 	auto& PropertyModule{ FModuleManager::LoadModuleChecked<FPropertyEditorModule>(NAME_PropertyEditorModule) };
-
-	FGSCSettingSourcePickerCustomization::UnregisterToPropertyEditorModule(PropertyModule);
-	FGSCPropertySourcePickerCustomization::UnregisterToPropertyEditorModule(PropertyModule);
-	FGSCSettingSourceNamePickerCustomization::UnregisterToPropertyEditorModule(PropertyModule);
 }
 
 
@@ -67,8 +53,6 @@ void FGSEditorCoreModule::RegisterAssetTypeActionCategory()
 void FGSEditorCoreModule::RegisterAssetTypeActions()
 {
 	RegisterAssetTypeActionCategory();
-
-	RegisterAsset<FGSCAssetTypeActions_SettingData>(RegisteredAssetTypeActions);
 }
 
 void FGSEditorCoreModule::UnregisterAssetTypeActions()

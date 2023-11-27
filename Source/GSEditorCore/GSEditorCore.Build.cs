@@ -12,6 +12,7 @@ public class GSEditorCore : ModuleRules
             new string[] 
 			{
                 ModuleDirectory,
+                ModuleDirectory + "/GSEditorCore",
             }
         );			
 		
@@ -24,7 +25,9 @@ public class GSEditorCore : ModuleRules
                 "UnrealEd",
                 "Slate",
 				"SlateCore",
-				"UMG",
+                "BlueprintGraph",
+                "KismetCompiler",
+                "UMG",
 			}
 		);
 			

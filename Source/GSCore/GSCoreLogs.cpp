@@ -1,5 +1,5 @@
 ﻿// Copyright (C) 2023 owoDra
 
-#include "GSCLogChannels.h"
+#include "GSCoreLogs.h"
 
 DEFINE_LOG_CATEGORY(LogGSC);
