@@ -5,7 +5,7 @@
 #include "Modules/ModuleManager.h"
 
 /**
- *  GameSettingsCore プラグインの主要機能のモジュール
+ *  Modules for the main features of the Game Setting Core plugin
  */
 class FGSCoreModule : public IModuleInterface
 {
