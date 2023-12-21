@@ -55,6 +55,12 @@ void UGSCSubsystem::SaveSettings()
 }
 
 
+void UGSCSubsystem::ApplySettings()
+{
+    ClearDirty();
+}
+
+
 void UGSCSubsystem::Initialize(FSubsystemCollectionBase& Collection)
 {
     UE_LOG(LogGSC, Log, TEXT("Initialized Settings Subsystem(%s)"), *GetNameSafe(this));

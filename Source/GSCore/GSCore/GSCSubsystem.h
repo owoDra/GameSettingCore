@@ -44,9 +44,33 @@ protected:
 	virtual void SetToDefaults() {}
 	virtual void ValidateSettings() {}
 	virtual void ResetToCurrentSettings() {}
-	virtual void ApplySettings() {}
+	virtual void ApplySettings();
 
+
+private:
+	bool bIsDirty{ false };
+
+protected:
+	void ClearDirty() { bIsDirty = false; }
+	void MarkDirty() { bIsDirty = true; }
+
+	template<typename T>
+	bool ChangeValueAndDirty(T& CurrentValue, const T& NewValue)
+	{
+		if (CurrentValue != NewValue)
+		{
+			CurrentValue = NewValue;
+			MarkDirty();
+
+			return true;
+		}
+
+		return false;
+	}
+
+public:
 	virtual bool IsDirty() const { return false; }
+
 
 public:
 	virtual void Initialize(FSubsystemCollectionBase& Collection) override;
