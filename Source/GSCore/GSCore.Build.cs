@@ -12,6 +12,7 @@ public class GSCore : ModuleRules
             new string[] 
 			{
                 ModuleDirectory,
+                ModuleDirectory + "/GSCore",
             }
         );			
 		
@@ -26,6 +27,7 @@ public class GSCore : ModuleRules
 				"SlateCore",
 				"UMG",
                 "InputCore",
+                "GameplayTags",
             }
 		);
 			
