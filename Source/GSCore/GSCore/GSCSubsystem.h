@@ -1,4 +1,4 @@
-// Copyright (C) 2023 owoDra
+﻿// Copyright (C) 2023 owoDra
 
 #pragma once
 
@@ -50,6 +50,9 @@ protected:
 private:
 	bool bIsDirty{ false };
 
+public:
+	virtual bool IsDirty() const { return false; }
+
 protected:
 	void ClearDirty() { bIsDirty = false; }
 	void MarkDirty() { bIsDirty = true; }
@@ -67,9 +70,6 @@ protected:
 
 		return false;
 	}
-
-public:
-	virtual bool IsDirty() const { return false; }
 
 
 public:

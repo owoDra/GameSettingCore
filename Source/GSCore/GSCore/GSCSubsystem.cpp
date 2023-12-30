@@ -1,4 +1,4 @@
-// Copyright (C) 2023 owoDra
+﻿// Copyright (C) 2023 owoDra
 
 #include "GSCSubsystem.h"
 
@@ -53,7 +53,6 @@ void UGSCSubsystem::SaveSettings()
 
     SaveConfig(CPF_Config, bHasCustomConfigIni ? *GSCSubsystemConfigIni : *GGameUserSettingsIni);
 }
-
 
 void UGSCSubsystem::ApplySettings()
 {
