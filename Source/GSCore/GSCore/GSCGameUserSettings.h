@@ -37,6 +37,8 @@ protected:
 	void DeinitializeSubsystems();
 
 public:
+	static UGSCGameUserSettings* GetGSCGameUserSettings();
+
 	/**
 	 * Get a Subsystem of specified type
 	 */
@@ -76,6 +78,18 @@ public:
 		return SubsystemCollection.GetSubsystemArray<TSubsystemClass>(TSubsystemClass::StaticClass());
 	}
 
+	/**
+	 * Get a Subsystem of specified type from the provided GameUserSettings
+	 * returns nullptr if the Subsystem cannot be found or the GameUserSettings is null
+	 */
+	template <typename TSubsystemClass>
+	static TSubsystemClass* GetSettingSubsystem()
+	{
+		auto* GUS{ UGSCGameUserSettings::GetGSCGameUserSettings() };
+
+		return GUS ? GUS->GetSubsystem<TSubsystemClass>() : nullptr;
+	}
+
 public:
 	virtual void PostInitProperties() override;
 	virtual void BeginDestroy() override;
@@ -101,5 +115,13 @@ public:
 	 *	The result of IsDirty() in subsystems is not considered.
 	 */
 	virtual bool IsDirtyIgnoreSubsystems() const;
+
+
+public:
+	DECLARE_MULTICAST_DELEGATE_OneParam(FGameSettingsAppliedDelegate, UGSCGameUserSettings* Settings);
+	FGameSettingsAppliedDelegate OnGameSettingsApplied;
+
+public:
+	FDelegateHandle CallAndRegister_OnGameSettingsApplied(FGameSettingsAppliedDelegate::FDelegate Delegate);
 
 };

@@ -27,6 +27,13 @@ void UGSCGameUserSettings::DeinitializeSubsystems()
 	SubsystemCollection.Deinitialize();
 }
 
+
+UGSCGameUserSettings* UGSCGameUserSettings::GetGSCGameUserSettings()
+{
+	return Cast<UGSCGameUserSettings>(UGameUserSettings::GetGameUserSettings());
+}
+
+
 void UGSCGameUserSettings::PostInitProperties()
 {
 	InitializeSubsystems();
@@ -129,4 +136,12 @@ bool UGSCGameUserSettings::IsDirty() const
 bool UGSCGameUserSettings::IsDirtyIgnoreSubsystems() const
 {
 	return Super::IsDirty();
+}
+
+
+FDelegateHandle UGSCGameUserSettings::CallAndRegister_OnGameSettingsApplied(FGameSettingsAppliedDelegate::FDelegate Delegate)
+{
+	Delegate.Execute(this);
+
+	return OnGameSettingsApplied.Add(Delegate);
 }
