@@ -4,6 +4,8 @@
 
 #include "GameFramework/GameUserSettings.h"
 
+#include "GSCSubsystem.h"
+
 #include "Subsystems/SubsystemCollection.h"
 
 #include "GSCGameUserSettings.generated.h"
@@ -50,7 +52,7 @@ public:
 	/**
 	 * Get a Subsystem of specified type
 	 */
-	template <typename TSubsystemClass = UGSCSubsystem>
+	template <typename TSubsystemClass>
 	TSubsystemClass* GetSubsystem() const
 	{
 		return SubsystemCollection.GetSubsystem<TSubsystemClass>(TSubsystemClass::StaticClass());
@@ -60,7 +62,7 @@ public:
 	 * Get a Subsystem of specified type from the provided GameUserSettings
 	 * returns nullptr if the Subsystem cannot be found or the GameUserSettings is null
 	 */
-	template <typename TSubsystemClass = UGSCSubsystem>
+	template <typename TSubsystemClass>
 	static TSubsystemClass* GetSubsystem(const UGSCGameUserSettings* GameUserSettings)
 	{
 		return GameUserSettings ? GameUserSettings->GetSubsystem<TSubsystemClass>() : nullptr;
@@ -72,7 +74,7 @@ public:
 	 * Note:
 	 *	Do not hold onto this Array reference unless you are sure the lifetime is less than that of UGameUserSettings
 	 */
-	template <typename TSubsystemClass = UGSCSubsystem>
+	template <typename TSubsystemClass>
 	const TArray<TSubsystemClass*>& GetSubsystemArray() const
 	{
 		return SubsystemCollection.GetSubsystemArray<TSubsystemClass>(TSubsystemClass::StaticClass());

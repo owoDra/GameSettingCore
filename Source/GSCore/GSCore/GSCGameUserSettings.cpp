@@ -2,7 +2,6 @@
 
 #include "GSCGameUserSettings.h"
 
-#include "GSCSubsystem.h"
 #include "GSCoreLogs.h"
 
 #include UE_INLINE_GENERATED_CPP_BY_NAME(GSCGameUserSettings)
@@ -53,7 +52,7 @@ void UGSCGameUserSettings::SetToDefaults()
 {
 	Super::SetToDefaults();
 
-	for (const auto& Each : GetSubsystemArray())
+	for (const auto& Each : GetSubsystemArray<UGSCSubsystem>())
 	{
 		Each->SetToDefaults();
 	}
@@ -63,7 +62,7 @@ void UGSCGameUserSettings::LoadSettings(bool bForceReload)
 {
 	Super::LoadSettings(bForceReload);
 
-	for (const auto& Each : GetSubsystemArray())
+	for (const auto& Each : GetSubsystemArray<UGSCSubsystem>())
 	{
 		Each->LoadSettings(bForceReload);
 	}
@@ -73,7 +72,7 @@ void UGSCGameUserSettings::ValidateSettings()
 {
 	Super::ValidateSettings();
 
-	for (const auto& Each : GetSubsystemArray())
+	for (const auto& Each : GetSubsystemArray<UGSCSubsystem>())
 	{
 		Each->ValidateSettings();
 	}
@@ -83,7 +82,7 @@ void UGSCGameUserSettings::SaveSettings()
 {
 	Super::SaveSettings();
 
-	for (const auto& Each : GetSubsystemArray())
+	for (const auto& Each : GetSubsystemArray<UGSCSubsystem>())
 	{
 		Each->SaveSettings();
 	}
@@ -91,7 +90,7 @@ void UGSCGameUserSettings::SaveSettings()
 
 void UGSCGameUserSettings::ApplySettings(bool bCheckForCommandLineOverrides)
 {
-	for (const auto& Each : GetSubsystemArray())
+	for (const auto& Each : GetSubsystemArray<UGSCSubsystem>())
 	{
 		Each->ApplySettings();
 	}
@@ -103,7 +102,7 @@ void UGSCGameUserSettings::ResetToCurrentSettings()
 {
 	Super::ResetToCurrentSettings();
 
-	for (const auto& Each : GetSubsystemArray())
+	for (const auto& Each : GetSubsystemArray<UGSCSubsystem>())
 	{
 		Each->ResetToCurrentSettings();
 	}
@@ -122,7 +121,7 @@ bool UGSCGameUserSettings::IsDirty() const
 
 	// Verify all subsystems
 
-	for (const auto& Each : GetSubsystemArray())
+	for (const auto& Each : GetSubsystemArray<UGSCSubsystem>())
 	{
 		if (Each->IsDirty())
 		{
