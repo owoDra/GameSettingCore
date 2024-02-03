@@ -16,7 +16,7 @@ UGSCGameUserSettings::UGSCGameUserSettings(const FObjectInitializer& ObjectIniti
 
 void UGSCGameUserSettings::InitializeSubsystems()
 {
-	UE_LOG(LogGSC, Log, TEXT("=== Initializing GameUserSettings(%s) ==="), *GetNameSafe(this));
+	UE_LOG(LogGameCore_Settings, Log, TEXT("=== Initializing GameUserSettings(%s) ==="), *GetNameSafe(this));
 
 	SubsystemCollection.Initialize(this);
 }

@@ -62,5 +62,5 @@ void UGSCSubsystem::ApplySettings()
 
 void UGSCSubsystem::Initialize(FSubsystemCollectionBase& Collection)
 {
-    UE_LOG(LogGSC, Log, TEXT("Initialized Settings Subsystem(%s)"), *GetNameSafe(this));
+    UE_LOG(LogGameCore_Settings, Log, TEXT("Initialized Settings Subsystem(%s)"), *GetNameSafe(this));
 }

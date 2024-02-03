@@ -92,6 +92,17 @@ public:
 		return GUS ? GUS->GetSubsystem<TSubsystemClass>() : nullptr;
 	}
 
+	/**
+	 * Get a Subsystem of specified type from the provided GameUserSettings
+	 * returns nullptr if the Subsystem cannot be found or the GameUserSettings is null
+	 */
+	static UGSCSubsystem* GetSettingSubsystemBase(TSubclassOf<UGSCSubsystem> SubsystemClass)
+	{
+		auto* GUS{ UGSCGameUserSettings::GetGSCGameUserSettings() };
+
+		return GUS ? GUS->GetSubsystemBase(SubsystemClass) : nullptr;
+	}
+
 public:
 	virtual void PostInitProperties() override;
 	virtual void BeginDestroy() override;
