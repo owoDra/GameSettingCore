@@ -96,6 +96,8 @@ void UGSCGameUserSettings::ApplySettings(bool bCheckForCommandLineOverrides)
 	}
 
 	Super::ApplySettings(bCheckForCommandLineOverrides);
+
+	OnGameSettingsApplied.Broadcast(this);
 }
 
 void UGSCGameUserSettings::ResetToCurrentSettings()
@@ -116,6 +118,7 @@ bool UGSCGameUserSettings::IsDirty() const
 
 	if (Super::IsDirty())
 	{
+		UE_LOG(LogGameCore_Settings, Log, TEXT("UGSCGameUserSettings::IsDirty(): GSCGameUserSettings is dirty"));
 		return true;
 	}
 
@@ -125,6 +128,7 @@ bool UGSCGameUserSettings::IsDirty() const
 	{
 		if (Each->IsDirty())
 		{
+			UE_LOG(LogGameCore_Settings, Log, TEXT("UGSCGameUserSettings::IsDirty(): %s is dirty"), *GetNameSafe(Each));
 			return true;
 		}
 	}

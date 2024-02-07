@@ -51,7 +51,7 @@ private:
 	bool bIsDirty{ false };
 
 public:
-	virtual bool IsDirty() const { return false; }
+	virtual bool IsDirty() const { return bIsDirty; }
 
 protected:
 	void ClearDirty() { bIsDirty = false; }
