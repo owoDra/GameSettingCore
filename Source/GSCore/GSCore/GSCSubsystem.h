@@ -26,6 +26,11 @@ private:
 	//
 	FString GSCSubsystemConfigIni;
 
+	//
+	// Whether ConfigIni has been loaded or not
+	//
+	bool bCustomConfigIniLoaded{ false };
+
 protected:
 	/**
 	 * Loads the user .ini settings into GConfig

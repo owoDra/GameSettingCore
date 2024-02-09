@@ -16,6 +16,8 @@ FString UGSCSubsystem::GetCustomConfigIniName() const
 
 void UGSCSubsystem::LoadConfigIni(bool bForceReload)
 {
+    bCustomConfigIniLoaded = true;
+
     auto Context{ FConfigContext::ReadIntoGConfig() };
     Context.bForceReload = bForceReload;
     Context.Load(*GetCustomConfigIniName(), GSCSubsystemConfigIni);
@@ -27,7 +29,7 @@ void UGSCSubsystem::LoadSettings(bool bForceReload)
 
     const auto bHasCustomConfigIni{ !GetCustomConfigIniName().IsEmpty()};
 
-    if (bForceReload && bHasCustomConfigIni)
+    if (bForceReload || (bHasCustomConfigIni && !bCustomConfigIniLoaded))
     {
         LoadConfigIni(bForceReload);
     }
