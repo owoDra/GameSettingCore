@@ -6,6 +6,8 @@
 
 #include "GSCSubsystem.generated.h"
 
+class UGSCGameUserSettings;
+
 
 /**
  * Base class for auto instanced and initialized subsystem that share the lifetime of game user settings
@@ -24,6 +26,7 @@ private:
 	//
 	// Name of the .ini file where the settings are stored
 	//
+	UPROPERTY()
 	FString GSCSubsystemConfigIni;
 
 	//
